@@ -40,14 +40,18 @@ def get_dict(json: list, defining_attributes: list):
     :param json: data from website
     """    ''''''
     sh = json['result']
+    #print(sh)
     lst = []
     if len(sh)>0:
         for i in sh:
             dct = {}
             dct['order_id'] = i['order_id']
             dct['token_id'] = i['sell']['data']['token_id']
-            for j in defining_attributes:
-                dct[j] = i['sell']['data']['properties'][j]
+            if defining_attributes == ['name_hro']:
+                dct['name_hro'] = ' '.join(i['sell']['data']['properties']['name'].split(' ')[1:])
+            else:
+                for j in defining_attributes:
+                    dct[j] = i['sell']['data']['properties'][j]
             if i['buy']['type'] == 'ETH':
                 dct['type2'] = i['buy']['type']
             else:
