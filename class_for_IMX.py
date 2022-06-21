@@ -63,10 +63,10 @@ class game:
             self.prior_trades = pd.read_csv(f'csvs/some_filled_trades_{self.address}.csv', encoding = 'utf-8-sig', sep =';')
             self.days = number_of_days
             first_trade = dt.datetime.strptime(self.prior_trades['updated_timestamp'].iloc[0], "%Y-%m-%dT%H:%M:%S.%fZ")
-            last_trade = dt.datetime.strptime(self.prior_trades['updated_timestamp'].iloc[-1], "%Y-%m-%dT%H:%M:%S.%fZ")
+            last_trade = dt.datetime.now()
             difference = last_trade-first_trade
             if difference.days < self.days:
-                print('The filled trades file has less recorded days than the ones that were requested.\nPlease choose a lower number or download the filled trades again with more days.')
+                print(f'The filled trades file has less recorded days than the ones that were requested ({difference} compared to {number_of_days}).\nPlease choose a lower number or download the filled trades again with more days.')
             return self.prior_trades
         else:
             print('There is no filled trades csv.\nPlease use the download_filled_trades function first.')
@@ -76,6 +76,7 @@ class game:
             return self.active_trades
         else:
             print('There is no active trades csv.\nPlease use the download_active_trades function first.')
+    def determine_arbitrage(self, coin_to_buy, coin_to_sell):
 
     
     

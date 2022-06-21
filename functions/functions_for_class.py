@@ -39,7 +39,6 @@ def get_dict(json: list):
     :param json: data from website
     """    ''''''
     sh = json['result']
-    #print(sh)
     lst = []
     if len(sh)>0:
         for i in sh:
@@ -129,7 +128,7 @@ def get_filled_trades_from_start_day(days_prior, token_address = '0xacb3c6a43d15
             try:
                 next_dict = get_dict(next_page)
                 next_df = pd.DataFrame(next_dict)
-                whole_lst = whole_lst + [next_df]
+                whole_lst += [next_df]
                 cursor = next_page['cursor']
             except:
                 next_dict =[]
@@ -146,11 +145,11 @@ def get_actual_minimum(df2, coin):
 #Higher price than the lowest card, then the real lowest is the second lowest. Otherwise, the lowest card is the actual lowest. This error only happens in 
 #some card qualities and rarity and so I filter the selection to only do the comparison in the quality/rarity that matters.
     #print(df2)
-    df3 = df2.groupby(['name','rarity', 'set', 'quality']).amount_sold.nsmallest(2).reset_index()
+    df3 = df2.groupby(['name','image']).amount_sold.nsmallest(2).reset_index()
     #print(df3)
-    df5 = df3.groupby(['name','rarity', 'set','quality']).amount_sold.min().reset_index()
+    df5 = df3.groupby(['name','image']).amount_sold.min().reset_index()
     #print(df5)
-    df6 = df3.groupby(['name','rarity', 'set','quality']).amount_sold.max().reset_index()
+    df6 = df3.groupby(['name','image']).amount_sold.max().reset_index()
     df5['amount_sold_2'] = df6.amount_sold
     df5['real_minimum_price'] = df5.apply(lambda x: x.amount_sold_2 if (x.quality == 'Meteorite' or x.quality == 'Shadow') and x.amount_sold_2/x.amount_sold -1 > 0.25 else x.amount_sold, axis = 1)
     df2['real_minimum_price'] = df2['amount_sold']
@@ -173,21 +172,21 @@ def number_of_cards(x):
 def number_of_cards_sold_last_x_days(df_with_filled_trades ,df_with_minimum_price, coin: str, days:int = 7):
     #gets the df by the coin x
     df = df_with_filled_trades[df_with_filled_trades['type2']==coin]
-    df = df[['name','quality','updated_timestamp']]
+    df = df[['image','updated_timestamp']]
     #The timestamps are not all in the same format, so I'm gonna correct that
     df.updated_timestamp = df.updated_timestamp.apply(lambda x: x[:-1] + ".000Z" if x[-4] == ':' else x)
     #transform timestamps into datetime
     df.updated_timestamp = df.updated_timestamp.apply(lambda x: dt.datetime.strptime(x, "%Y-%m-%dT%H:%M:%S.%fZ") )
     #looks at the most recent timestamp
     last_sold_time = df.iloc[-1]['updated_timestamp']
-    #get's only the trades that happened at most, 7 days before the last trade
-    last_7_days = last_sold_time-dt.timedelta(days = days)
-    last_7_days_df = df[df.updated_timestamp > last_7_days]
+    #get's only the trades that happened at most, x days before the last trade
+    last_x_days = last_sold_time-dt.timedelta(days = days)
+    last_x_days_df = df[df.updated_timestamp > last_x_days]
     #Get's the average number of trades per day over the last 7 days for each card
-    counter_df = last_7_days_df.groupby(['name','quality']).updated_timestamp.count()/days
+    counter_df = last_x_days_df.groupby(['image']).updated_timestamp.count()/days
     counter_df = counter_df.reset_index()
     counter_df.rename(columns = {'updated_timestamp':'average_sold'}, inplace = True)
-    df_with_minimum_price = pd.merge(df_with_minimum_price, counter_df, on = ['name','quality'], how = 'inner')
+    df_with_minimum_price = pd.merge(df_with_minimum_price, counter_df, on = ['image'], how = 'inner')
     return df_with_minimum_price
 
 
@@ -198,15 +197,12 @@ market_percentage:int  = 0.2):
     df1 = dc_with_every_trade.copy()
     #print(df1)
     #gets only the active trades that are selling for the coin 1
-    df_currency_one = df1[df1['type2']==currency_one].sort_values(['name','quality', 'amount_sold']).reset_index(drop = True)
+    df_currency_one = df1[df1['type2']==currency_one]
     #gets only the active trades that are selling for the coin 2
-    df_currency_two = df1[df1['type2']==currency_two].sort_values(['name','quality','amount_sold']).reset_index(drop = True)
+    df_currency_two = df1[df1['type2']==currency_two]
     #gets the minimum price in dollars for each card
-    dfmin_currency_one = df_currency_one[['order_id','token_id','name','rarity','set','quality','amount_sold']]
-    dfmin_currency_one = dfmin_currency_one.rename(columns = {'order_id': 'order_id_' + currency_one,
-     'token_id' : 'token_id_' + currency_one, 'amount_sold':'real_minimum_price'})
-    dfmin_currency_two = get_actual_minimum(df_currency_two, currency_two)
-    dfmin_currency_one[currency_one + '_USD'] = dfmin_currency_one['real_minimum_price']*currency_to_usd[currency_one]
+    dfmin_currency_two = df_currency_two[df_currency_two.amount_sold.min()]
+    df_currency_one[currency_one + '_USD'] = df_currency_one['real_minimum_price']*currency_to_usd[currency_one]
     dfmin_currency_two[currency_two + '_USD'] = dfmin_currency_two['real_minimum_price']*currency_to_usd[currency_two]
     #for the coin that I'm going to sell the cards in, selects only those that have been selling for an average of x for y days
     dfmin_currency_two = number_of_cards_sold_last_x_days(filled_trades,dfmin_currency_two, currency_two, days_average)
@@ -214,13 +210,11 @@ market_percentage:int  = 0.2):
     #final_df = pd.merge(dfmin_currency_two[['order_id_'+currency_two,'token_id_' +currency_two,'name','rarity','quality','set',currency_two + '_USD',
      #'real_minimum_price']],dfmin_currency_one[['order_id_' + currency_one,'token_id_' + currency_one,'name','rarity','quality','set',
      #currency_one + '_USD', 'real_minimum_price']], on = ['name','rarity','quality','set'],how ='inner', suffixes=('_' + currency_two, '_' + currency_one))
-    final_df = pd.merge(dfmin_currency_one,dfmin_currency_two, on = ['name','quality', 'rarity','set'],how ='inner')
-    final_df['shift_name'] = final_df['name'].shift(1,  fill_value = 0)
-    final_df['shift_quality'] = final_df['quality'].shift(1,fill_value = 0)
+    final_df = pd.merge(df_currency_one,dfmin_currency_two, on = ['image'],how ='inner')
+    final_df['shift_image'] = final_df['image'].shift(1,  fill_value = 0)
     #print(final_df.head(20))
     for i in range (len(final_df)):
-        if final_df.loc[i, 'name'] == final_df.loc[i, 'shift_name'] and \
-            final_df.loc[i, 'quality'] == final_df.loc[i, 'shift_quality']:
+        if final_df.loc[i, 'image'] == final_df.loc[i, 'shift_image']:
              final_df.loc[i, 'positive']= final_df.loc[i-1,'positive']-1
         else:
             final_df.loc[i, 'positive'] = final_df.loc[i, 'average_sold']*market_percentage
@@ -302,13 +296,13 @@ def get_all_orders(token_address = '0xacb3c6a43d15b907e8433077b6d38ae40936fe2c')
     #first_time = correct_time_stamp(dictionary_with_all_selling_cards.iloc[0]['timestamp'], second = 1)
     first_page = go_to_site(status = 'active', page_size = '200', cursor = '',
      sell_token_address = token_address)
-    #print(first_page)
+    remaining = first_page['remaining']
     cursor = first_page['cursor']
     first_dict = get_dict(first_page)
     first_df = pd.DataFrame(first_dict)
     whole_lst = [first_df]
     #print(whole_lst)
-    while cursor: 
+    while cursor and remaining >0: 
         next_page = go_to_site(status = 'active', page_size = '200', cursor  = cursor,
          sell_token_address = token_address)
         if next_page != {'message': 'Endpoint request timed out'} and next_page != {'code': 'internal_server_error', 'message': 'The server encountered an internal error and was unable to process your request'}:               
@@ -317,8 +311,8 @@ def get_all_orders(token_address = '0xacb3c6a43d15b907e8433077b6d38ae40936fe2c')
             next_df = pd.DataFrame(next_dict)
             whole_lst += [next_df]
             #print(len(whole_lst))
-            if len(whole_lst[0])>0:
-                print(whole_lst[0]['updated_timestamp'].head(1).to_string(header=False, index=False))
+            if len(whole_lst[-1])>0:
+                print(whole_lst[-1]['updated_timestamp'].iloc[0])
             else:
                 pass
     
