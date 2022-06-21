@@ -146,6 +146,7 @@ def get_filled_trades_from_start_day(days_prior, defining_attributes , token_add
         else:
             print('Something happened with the API')
     whole_df = pd.concat(whole_lst, ignore_index = True)
+    whole_df['token_id'] = whole_df['token_id'].astype(str)
     whole_df.to_csv(f'csvs/some_filled_trades_{token_address}.csv', index = False, sep = ';', encoding = 'utf-8-sig')
     return whole_df
 
@@ -193,11 +194,10 @@ market_percentage:int  = 0.2):
     #gets the minimum price in dollars for each card
     #print(df_currency_one)
     #print(df_currency_two)
-    dfmin_currency_two = df_currency_two.groupby(defining_attributes).amount_sold.min().to_frame()
+    dfmin_currency_two = df_currency_two.groupby(defining_attributes).amount_sold.min().reset_index()
     #print(dfmin_currency_two)
     #print(df_currency_one.head())
     df_currency_one[currency_one + '_USD'] = df_currency_one['amount_sold']*currency_to_usd[currency_one]
-    #print(dfmin_currency_two)
     dfmin_currency_two[currency_two + '_USD'] = dfmin_currency_two['amount_sold']*currency_to_usd[currency_two]
     #print(dfmin_currency_two)
     #for the coin that I'm going to sell the cards in, selects only those that have been selling for an average of x for y days
@@ -225,7 +225,7 @@ market_percentage:int  = 0.2):
         else:
             final_df.loc[i, 'positive'] = final_df.loc[i, 'average_sold']*market_percentage
         number = 0
-    final_df = final_df[final_df.positive >= 1]
+    final_df = final_df[final_df['positive'] >= 1]
     #print(final_df)
     final_df['percentage'] = round(final_df[currency_two + '_USD']/final_df[currency_one + '_USD']*100 -100,2)
     final_df = final_df.sort_values(by = 'percentage', ascending = False)    
@@ -324,10 +324,11 @@ def get_all_orders(defining_attributes: list, token_address = '0xacb3c6a43d15b90
             else:
                 pass
     
-
+    
     whole_df = pd.concat(whole_lst, ignore_index = True)
     whole_df = whole_df.drop_duplicates(ignore_index = True, subset = 'order_id')
     whole_df.sort_values('updated_timestamp', ascending = False,  inplace = True, ignore_index = True)
+    whole_df['token_id'] = whole_df['token_id'].astype(str)
     whole_df.to_csv(f'csvs/active_trades_for_sale_{token_address}.csv', sep = ';', index = False, encoding = 'utf-8-sig')
     
     #df_updated = df_updated.drop('Unnamed: 0', axis = 1)
