@@ -5,4 +5,4 @@ print(gogh.name)
 
 gogh.load_filled_trades(9)
 gogh.load_active_trades()
-print(gogh.determine_arbitrage('ETH','GOG', daily_market_percentage=0.001))
+print(gogh.determine_arbitrage('ETH','GOG', daily_market_percentage=100)[['image','percentage']])

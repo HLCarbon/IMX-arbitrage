@@ -80,7 +80,7 @@ class game:
         coin_to_buy_usd = fc.get_current_data(coin_to_buy)
         coin_to_sell_usd = fc.get_current_data(coin_to_sell)
         coin_price_dict = {coin_to_buy:coin_to_buy_usd, coin_to_sell:coin_to_sell_usd}
-        self.arbitrage_table = fc.get_arbitrage_from_2_currencies(coin_to_buy_usd, coin_to_sell_usd, self.active_trades, self.filled_trades, 
+        self.arbitrage_table = fc.get_arbitrage_from_2_currencies(coin_to_buy, coin_to_sell, self.active_trades, self.filled_trades, 
         coin_price_dict, self.days, market_percentage=daily_market_percentage)
         return self.arbitrage_table
 

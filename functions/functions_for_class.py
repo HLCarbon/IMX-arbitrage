@@ -7,6 +7,7 @@ import urllib3
 import json
 import time
 http = urllib3.PoolManager()
+pd.set_option('display.max_colwidth', None)
 
 #These are the keys that are associated with each token (coin)
 dct_token = {'0xacb3c6a43d15b907e8433077b6d38ae40936fe2c':'NOP',
@@ -196,21 +197,30 @@ market_percentage:int  = 0.2):
     #For each card, it compares the lowest price for each currency and calculates the difference in dollars.
     df1 = dc_with_every_trade.copy()
     #print(df1)
+    #print(df1.type2.unique())
     #gets only the active trades that are selling for the coin 1
     df_currency_one = df1[df1['type2']==currency_one]
     #gets only the active trades that are selling for the coin 2
     df_currency_two = df1[df1['type2']==currency_two]
     #gets the minimum price in dollars for each card
-    dfmin_currency_two = df_currency_two.groupby('image').amount_sold.min()
+    #print(df_currency_one)
+    #print(df_currency_two)
+    dfmin_currency_two = df_currency_two.groupby('image').amount_sold.min().to_frame()
+    #print(dfmin_currency_two)
+    #print(df_currency_one.head())
     df_currency_one[currency_one + '_USD'] = df_currency_one['amount_sold']*currency_to_usd[currency_one]
-    dfmin_currency_two[currency_two + '_USD'] = dfmin_currency_two['amount_sold']*currency_to_usd[currency_two]
+    #print(dfmin_currency_two)
+    dfmin_currency_two[currency_two + '_USD'] = dfmin_currency_two*currency_to_usd[currency_two]
+    #print(dfmin_currency_two)
     #for the coin that I'm going to sell the cards in, selects only those that have been selling for an average of x for y days
     dfmin_currency_two = number_of_cards_sold_last_x_days(filled_trades,dfmin_currency_two, currency_two, days_average)
+    #print(dfmin_currency_two)
     #merges the buying df with the sell df
     #final_df = pd.merge(dfmin_currency_two[['order_id_'+currency_two,'token_id_' +currency_two,'name','rarity','quality','set',currency_two + '_USD',
      #'real_minimum_price']],dfmin_currency_one[['order_id_' + currency_one,'token_id_' + currency_one,'name','rarity','quality','set',
      #currency_one + '_USD', 'real_minimum_price']], on = ['name','rarity','quality','set'],how ='inner', suffixes=('_' + currency_two, '_' + currency_one))
     final_df = pd.merge(df_currency_one,dfmin_currency_two, on = ['image'],how ='inner')
+    #print(final_df)
     final_df['shift_image'] = final_df['image'].shift(1,  fill_value = 0)
     #print(final_df.head(20))
     for i in range (len(final_df)):
@@ -219,6 +229,7 @@ market_percentage:int  = 0.2):
         else:
             final_df.loc[i, 'positive'] = final_df.loc[i, 'average_sold']*market_percentage
     final_df = final_df[final_df.positive >= 1]
+    #print(final_df)
     final_df['percentage'] = round(final_df[currency_two + '_USD']/final_df[currency_one + '_USD']*100 -100,2)
     final_df = final_df.sort_values(by = 'percentage', ascending = False)    
 
@@ -256,16 +267,16 @@ def export_to_buy_and_sell(df, coin_to_buy = 'ETH', coin_to_sell = 'GODS') -> No
         'Diamond':0.01
     })
 
-    df['real_minimum_price_y'] = df['real_minimum_price_y']*\
+    df['amount_sold'] = df['amount_sold']*\
         (1-0.03-0.005-df['market_percentage'])
 
-    df_to_export_to_sell_divided = df[['token_id_' + coin_to_buy,'real_minimum_price_y']]
+    df_to_export_to_sell_divided = df[['token_id_' + coin_to_buy,'amount_sold']]
     df_to_export_to_sell=df_to_export_to_sell_divided
     #I'm going to sell the card for 0.5% cheaper above the 8 percent fees
-    df_to_export_to_sell['real_minimum_price_y'] = df_to_export_to_sell['real_minimum_price_y']*10**10
-    df_to_export_to_sell['real_minimum_price_y'] = df_to_export_to_sell['real_minimum_price_y'].astype('uint64')
-    df_to_export_to_sell['real_minimum_price_y'] = df_to_export_to_sell['real_minimum_price_y'].astype('str')
-    df_to_export_to_sell['real_minimum_price_y'] = df_to_export_to_sell['real_minimum_price_y'] + '00000000'
+    df_to_export_to_sell['amount_sold'] = df_to_export_to_sell['amount_sold']*10**10
+    df_to_export_to_sell['amount_sold'] = df_to_export_to_sell['amount_sold'].astype('uint64')
+    df_to_export_to_sell['amount_sold'] = df_to_export_to_sell['amount_sold'].astype('str')
+    df_to_export_to_sell['amount_sold'] = df_to_export_to_sell['amount_sold'] + '00000000'
     df_to_export_to_sell['token_id_' + coin_to_buy] = df_to_export_to_sell['token_id_' + coin_to_buy].astype('str')
     lst_to_export_to_sell =df_to_export_to_sell.values.tolist()
     with open('C:/Users/Utilizador/Desktop/Python/IMX/JavaScript/Buy_' + coin_to_buy + '_sell_' + coin_to_sell + '_arbitrage/arbitrage_' + coin_to_buy + '_to_' + coin_to_sell + '_sell.js', 'w',newline='') as data_file:
