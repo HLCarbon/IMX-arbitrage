@@ -16,7 +16,7 @@ dct_token = {'0xacb3c6a43d15b907e8433077b6d38ae40936fe2c':'NOP',
   '0xed35af169af46a02ee13b9d79eb57d6d68c1749e':'OMI',
  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48':'USDC'}
 
-def get_current_data(from_sym='BTC', to_sym='USD', exchange=''):
+def get_current_data(from_sym='BTC', to_sym='USD', exchange='') -> int:
     #Goes to the website API and gets the price in dollars of the currency x
     url = 'https://min-api.cryptocompare.com/data/price'    
     
@@ -201,9 +201,9 @@ market_percentage:int  = 0.2):
     #gets only the active trades that are selling for the coin 2
     df_currency_two = df1[df1['type2']==currency_two]
     #gets the minimum price in dollars for each card
-    dfmin_currency_two = df_currency_two[df_currency_two.amount_sold.min()]
-    df_currency_one[currency_one + '_USD'] = df_currency_one['real_minimum_price']*currency_to_usd[currency_one]
-    dfmin_currency_two[currency_two + '_USD'] = dfmin_currency_two['real_minimum_price']*currency_to_usd[currency_two]
+    dfmin_currency_two = df_currency_two.groupby('image').amount_sold.min()
+    df_currency_one[currency_one + '_USD'] = df_currency_one['amount_sold']*currency_to_usd[currency_one]
+    dfmin_currency_two[currency_two + '_USD'] = dfmin_currency_two['amount_sold']*currency_to_usd[currency_two]
     #for the coin that I'm going to sell the cards in, selects only those that have been selling for an average of x for y days
     dfmin_currency_two = number_of_cards_sold_last_x_days(filled_trades,dfmin_currency_two, currency_two, days_average)
     #merges the buying df with the sell df

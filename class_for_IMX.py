@@ -53,30 +53,37 @@ class game:
         return df
     def download_filled_trades(self, number_of_days:int):
         self.days = number_of_days
-        self.prior_trades = fc.get_filled_trades_from_start_day(self.days, self.address)
-        return self.prior_trades
+        self.filled_trades = fc.get_filled_trades_from_start_day(self.days, self.address)
+        return self.filled_trades
     def download_active_trades(self):
         self.active_trades = fc.get_all_orders(self.address)
         return self.active_trades
-    def get_filled_trades(self, number_of_days:int):
+    def load_filled_trades(self, number_of_days:int):
         if path.exists(f'csvs/some_filled_trades_{self.address}.csv'):
-            self.prior_trades = pd.read_csv(f'csvs/some_filled_trades_{self.address}.csv', encoding = 'utf-8-sig', sep =';')
+            self.filled_trades = pd.read_csv(f'csvs/some_filled_trades_{self.address}.csv', encoding = 'utf-8-sig', sep =';')
             self.days = number_of_days
-            first_trade = dt.datetime.strptime(self.prior_trades['updated_timestamp'].iloc[0], "%Y-%m-%dT%H:%M:%S.%fZ")
+            first_trade = dt.datetime.strptime(self.filled_trades['updated_timestamp'].iloc[0], "%Y-%m-%dT%H:%M:%S.%fZ")
             last_trade = dt.datetime.now()
             difference = last_trade-first_trade
             if difference.days < self.days:
                 print(f'The filled trades file has less recorded days than the ones that were requested ({difference} compared to {number_of_days}).\nPlease choose a lower number or download the filled trades again with more days.')
-            return self.prior_trades
+            return self.filled_trades
         else:
             print('There is no filled trades csv.\nPlease use the download_filled_trades function first.')
-    def get_active_trades(self):
+    def load_active_trades(self):
         if path.exists(f'csvs/active_trades_for_sale_{self.address}.csv'):
             self.active_trades = pd.read_csv(f'csvs/active_trades_for_sale_{self.address}.csv', encoding = 'utf-8-sig', sep =';')
             return self.active_trades
         else:
             print('There is no active trades csv.\nPlease use the download_active_trades function first.')
-    def determine_arbitrage(self, coin_to_buy, coin_to_sell):
+    def determine_arbitrage(self, coin_to_buy, coin_to_sell, daily_market_percentage = 0.2):
+        coin_to_buy_usd = fc.get_current_data(coin_to_buy)
+        coin_to_sell_usd = fc.get_current_data(coin_to_sell)
+        coin_price_dict = {coin_to_buy:coin_to_buy_usd, coin_to_sell:coin_to_sell_usd}
+        self.arbitrage_table = fc.get_arbitrage_from_2_currencies(coin_to_buy_usd, coin_to_sell_usd, self.active_trades, self.filled_trades, 
+        coin_price_dict, self.days, market_percentage=daily_market_percentage)
+        return self.arbitrage_table
+
 
     
     
