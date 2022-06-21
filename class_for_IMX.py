@@ -7,7 +7,10 @@ import datetime as dt
 #for book, in name do str.split('#')[0]
 
 class game:
+    
+
     def __init__(self, name:str):
+        self.defining_attributes = ['image_url']
         def get_name_from_address(self):
             response = fc.go_to_site(site_type = f'collections/{self.address}')
             return response['name']
@@ -37,9 +40,10 @@ class game:
             self.name = name
             self.address = get_address_from_name(self)
     
+    def change_defining_attributes(self, new_attributes:list):
+        self.defining_attributes = new_attributes
     def get_metadata_schema(self):
-        response = fc.go_to_site(site_type = 'orders', querystring = {"status":"filled",
-            "sell_token_address":self.address})
+        response = fc.go_to_site(site_type = 'orders', sell_token_address = self.address)
         token_id = response['result'][0]['sell']['data']['token_id']
         token_address = response['result'][0]['sell']['data']['token_address']
         response = fc.go_to_site(site_type = f'assets/{token_address}/{token_id}')
@@ -53,10 +57,10 @@ class game:
         return df
     def download_filled_trades(self, number_of_days:int):
         self.days = number_of_days
-        self.filled_trades = fc.get_filled_trades_from_start_day(self.days, self.address)
+        self.filled_trades = fc.get_filled_trades_from_start_day(self.days,self.defining_attributes, self.address, )
         return self.filled_trades
     def download_active_trades(self):
-        self.active_trades = fc.get_all_orders(self.address)
+        self.active_trades = fc.get_all_orders(self.defining_attributes, self.address)
         return self.active_trades
     def load_filled_trades(self, number_of_days:int):
         if path.exists(f'csvs/some_filled_trades_{self.address}.csv'):
@@ -80,8 +84,8 @@ class game:
         coin_to_buy_usd = fc.get_current_data(coin_to_buy)
         coin_to_sell_usd = fc.get_current_data(coin_to_sell)
         coin_price_dict = {coin_to_buy:coin_to_buy_usd, coin_to_sell:coin_to_sell_usd}
-        self.arbitrage_table = fc.get_arbitrage_from_2_currencies(coin_to_buy, coin_to_sell, self.active_trades, self.filled_trades, 
-        coin_price_dict, self.days, market_percentage=daily_market_percentage)
+        self.arbitrage_table = fc.get_arbitrage_from_2_currencies(coin_to_buy, coin_to_sell, self.active_trades, self.filled_trades,
+        coin_price_dict, self.defining_attributes, self.days, market_percentage=daily_market_percentage)
         return self.arbitrage_table
 
 

@@ -33,7 +33,7 @@ def get_current_data(from_sym='BTC', to_sym='USD', exchange='') -> int:
     
     return data['USD']
 
-def get_dict(json: list):
+def get_dict(json: list, defining_attributes: list):
     """
     get_dict Transforms the json data into a list of dictionaries
 
@@ -46,7 +46,8 @@ def get_dict(json: list):
             dct = {}
             dct['order_id'] = i['order_id']
             dct['token_id'] = i['sell']['data']['token_id']
-            dct['image'] = i['sell']['data']['properties']['image_url']
+            for j in defining_attributes:
+                dct[j] = i['sell']['data']['properties'][j]
             if i['buy']['type'] == 'ETH':
                 dct['type2'] = i['buy']['type']
             else:
@@ -96,7 +97,7 @@ def go_to_site(order_by='', site_type = 'orders', status = '',updated_min_timest
     return response_data
 
 
-def get_filled_trades_from_start_day(days_prior, token_address = '0xacb3c6a43d15b907e8433077b6d38ae40936fe2c'):
+def get_filled_trades_from_start_day(days_prior, defining_attributes , token_address = '0xacb3c6a43d15b907e8433077b6d38ae40936fe2c', ):
     """
     get_filled_trades_from_start_day Returns all the trades that were done in the marketplace days_prior days before now
 
@@ -114,7 +115,7 @@ def get_filled_trades_from_start_day(days_prior, token_address = '0xacb3c6a43d15
         sell_token_address = token_address,updated_min_timestamp = time_start)
 
 
-    first_dict = get_dict(next_page)
+    first_dict = get_dict(next_page, defining_attributes)
     first_df = pd.DataFrame(first_dict)
     whole_lst = [first_df]
     cursor = next_page['cursor']
@@ -127,7 +128,7 @@ def get_filled_trades_from_start_day(days_prior, token_address = '0xacb3c6a43d15
                 updated_min_timestamp = time_start)
             print(whole_lst[-1].iloc[-1]['updated_timestamp'])
             try:
-                next_dict = get_dict(next_page)
+                next_dict = get_dict(next_page, defining_attributes)
                 next_df = pd.DataFrame(next_dict)
                 whole_lst += [next_df]
                 cursor = next_page['cursor']
@@ -140,27 +141,6 @@ def get_filled_trades_from_start_day(days_prior, token_address = '0xacb3c6a43d15
     whole_df.to_csv(f'csvs/some_filled_trades_{token_address}.csv', index = False, sep = ';', encoding = 'utf-8-sig')
     return whole_df
 
-def get_actual_minimum(df2, coin):
-    #To get the minimum price of each card I could just go and do min() for each card. However, sometimes the card with the cheapest price is an error
-#and can't actually be bought. To detect those cards, I get the lowest cost card and the second lowest and compare them. If the second lowest is 25%
-#Higher price than the lowest card, then the real lowest is the second lowest. Otherwise, the lowest card is the actual lowest. This error only happens in 
-#some card qualities and rarity and so I filter the selection to only do the comparison in the quality/rarity that matters.
-    #print(df2)
-    df3 = df2.groupby(['name','image']).amount_sold.nsmallest(2).reset_index()
-    #print(df3)
-    df5 = df3.groupby(['name','image']).amount_sold.min().reset_index()
-    #print(df5)
-    df6 = df3.groupby(['name','image']).amount_sold.max().reset_index()
-    df5['amount_sold_2'] = df6.amount_sold
-    df5['real_minimum_price'] = df5.apply(lambda x: x.amount_sold_2 if (x.quality == 'Meteorite' or x.quality == 'Shadow') and x.amount_sold_2/x.amount_sold -1 > 0.25 else x.amount_sold, axis = 1)
-    df2['real_minimum_price'] = df2['amount_sold']
-    #print(df5)
-    df5 = pd.merge(df5,df2,on=['name','rarity','quality','set','real_minimum_price'], how='left')
-    df5 = df5.drop_duplicates(subset = ['name','quality'])
-    df5 = df5[['order_id','token_id','name','rarity','set','quality','real_minimum_price']]
-    df5 = df5.rename(columns = {'order_id': 'order_id_' + coin, 'token_id' : 'token_id_' + coin})
-    #print(df5)
-    return df5
 
 def number_of_cards(x):
     print(x)
@@ -170,10 +150,10 @@ def number_of_cards(x):
         number = x.average_sold
     return number
 
-def number_of_cards_sold_last_x_days(df_with_filled_trades ,df_with_minimum_price, coin: str, days:int = 7):
+def number_of_cards_sold_last_x_days(df_with_filled_trades ,df_with_minimum_price,defining_attributes, coin: str, days:int = 7):
     #gets the df by the coin x
     df = df_with_filled_trades[df_with_filled_trades['type2']==coin]
-    df = df[['image','updated_timestamp']]
+    df = df[defining_attributes + ['updated_timestamp']]
     #The timestamps are not all in the same format, so I'm gonna correct that
     df.updated_timestamp = df.updated_timestamp.apply(lambda x: x[:-1] + ".000Z" if x[-4] == ':' else x)
     #transform timestamps into datetime
@@ -184,15 +164,15 @@ def number_of_cards_sold_last_x_days(df_with_filled_trades ,df_with_minimum_pric
     last_x_days = last_sold_time-dt.timedelta(days = days)
     last_x_days_df = df[df.updated_timestamp > last_x_days]
     #Get's the average number of trades per day over the last 7 days for each card
-    counter_df = last_x_days_df.groupby(['image']).updated_timestamp.count()/days
+    counter_df = last_x_days_df.groupby(defining_attributes).updated_timestamp.count()/days
     counter_df = counter_df.reset_index()
     counter_df.rename(columns = {'updated_timestamp':'average_sold'}, inplace = True)
-    df_with_minimum_price = pd.merge(df_with_minimum_price, counter_df, on = ['image'], how = 'inner')
+    df_with_minimum_price = pd.merge(df_with_minimum_price, counter_df, on = defining_attributes, how = 'inner')
     return df_with_minimum_price
 
 
 def get_arbitrage_from_2_currencies(currency_one:str,currency_two:str,dc_with_every_trade, 
-filled_trades , currency_to_usd: dict, days_average:int = 7,
+filled_trades , currency_to_usd: dict, defining_attributes: list, days_average:int = 7,
 market_percentage:int  = 0.2):
     #For each card, it compares the lowest price for each currency and calculates the difference in dollars.
     df1 = dc_with_every_trade.copy()
@@ -205,29 +185,38 @@ market_percentage:int  = 0.2):
     #gets the minimum price in dollars for each card
     #print(df_currency_one)
     #print(df_currency_two)
-    dfmin_currency_two = df_currency_two.groupby('image').amount_sold.min().to_frame()
+    dfmin_currency_two = df_currency_two.groupby(defining_attributes).amount_sold.min().to_frame()
     #print(dfmin_currency_two)
     #print(df_currency_one.head())
     df_currency_one[currency_one + '_USD'] = df_currency_one['amount_sold']*currency_to_usd[currency_one]
     #print(dfmin_currency_two)
-    dfmin_currency_two[currency_two + '_USD'] = dfmin_currency_two*currency_to_usd[currency_two]
+    dfmin_currency_two[currency_two + '_USD'] = dfmin_currency_two['amount_sold']*currency_to_usd[currency_two]
     #print(dfmin_currency_two)
     #for the coin that I'm going to sell the cards in, selects only those that have been selling for an average of x for y days
-    dfmin_currency_two = number_of_cards_sold_last_x_days(filled_trades,dfmin_currency_two, currency_two, days_average)
+    dfmin_currency_two = number_of_cards_sold_last_x_days(filled_trades,dfmin_currency_two,defining_attributes, currency_two, days_average)
     #print(dfmin_currency_two)
     #merges the buying df with the sell df
     #final_df = pd.merge(dfmin_currency_two[['order_id_'+currency_two,'token_id_' +currency_two,'name','rarity','quality','set',currency_two + '_USD',
      #'real_minimum_price']],dfmin_currency_one[['order_id_' + currency_one,'token_id_' + currency_one,'name','rarity','quality','set',
      #currency_one + '_USD', 'real_minimum_price']], on = ['name','rarity','quality','set'],how ='inner', suffixes=('_' + currency_two, '_' + currency_one))
-    final_df = pd.merge(df_currency_one,dfmin_currency_two, on = ['image'],how ='inner')
+    final_df = pd.merge(df_currency_one,dfmin_currency_two, on = defining_attributes,how ='inner')
     #print(final_df)
-    final_df['shift_image'] = final_df['image'].shift(1,  fill_value = 0)
+    print(final_df)
+    final_df.sort_values(defining_attributes + [currency_one + '_USD'], ascending= True)
+    for i in defining_attributes:
+        final_df[f'shift_{i}'] = final_df[i].shift(1,  fill_value = 0)
     #print(final_df.head(20))
+
     for i in range (len(final_df)):
-        if final_df.loc[i, 'image'] == final_df.loc[i, 'shift_image']:
-             final_df.loc[i, 'positive']= final_df.loc[i-1,'positive']-1
+        number = 0
+        for j in defining_attributes:
+            if final_df.loc[i, j] == final_df.loc[i, f'shift_{j}']:
+                number +=1
+        if number == len(defining_attributes):
+            final_df.loc[i, 'positive']= final_df.loc[i-1,'positive']-1
         else:
             final_df.loc[i, 'positive'] = final_df.loc[i, 'average_sold']*market_percentage
+        number = 0
     final_df = final_df[final_df.positive >= 1]
     #print(final_df)
     final_df['percentage'] = round(final_df[currency_two + '_USD']/final_df[currency_one + '_USD']*100 -100,2)
@@ -301,7 +290,7 @@ cards_each_time:int = 10, percentage_above:int = 20) ->None :
             p = execute_js('C:/Users/Utilizador/Desktop/Python/IMX/JavaScript/Buy_{}_sell_{}_arbitrage/sell.js'.format(coin_to_buy, coin_to_sell))
             print(str(p) + ' ' + str(i))
 
-def get_all_orders(token_address = '0xacb3c6a43d15b907e8433077b6d38ae40936fe2c'):
+def get_all_orders(defining_attributes: list, token_address = '0xacb3c6a43d15b907e8433077b6d38ae40936fe2c'):
     #dictionary_with_all_selling_cards = pd.read_csv('data_active_trades_for_sale.csv', sep = ';', encoding='cp1252', low_memory=False)
     #dictionary_with_all_selling_cards = dictionary_with_all_selling_cards.sort_values('updated_timestamp', ascending = False)
     #first_time = correct_time_stamp(dictionary_with_all_selling_cards.iloc[0]['timestamp'], second = 1)
@@ -309,7 +298,7 @@ def get_all_orders(token_address = '0xacb3c6a43d15b907e8433077b6d38ae40936fe2c')
      sell_token_address = token_address)
     remaining = first_page['remaining']
     cursor = first_page['cursor']
-    first_dict = get_dict(first_page)
+    first_dict = get_dict(first_page, defining_attributes)
     first_df = pd.DataFrame(first_dict)
     whole_lst = [first_df]
     #print(whole_lst)
@@ -318,7 +307,7 @@ def get_all_orders(token_address = '0xacb3c6a43d15b907e8433077b6d38ae40936fe2c')
          sell_token_address = token_address)
         if next_page != {'message': 'Endpoint request timed out'} and next_page != {'code': 'internal_server_error', 'message': 'The server encountered an internal error and was unable to process your request'}:               
             cursor = next_page['cursor']
-            next_dict = get_dict(next_page)
+            next_dict = get_dict(next_page,defining_attributes)
             next_df = pd.DataFrame(next_dict)
             whole_lst += [next_df]
             #print(len(whole_lst))
