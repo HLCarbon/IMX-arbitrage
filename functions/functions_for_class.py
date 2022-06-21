@@ -30,7 +30,7 @@ def get_current_data(from_sym='BTC', to_sym='USD', exchange='') -> int:
     # response comes as json
     response = requests.get(url, params=parameters)   
     data = response.json()
-    
+
     return data['USD']
 
 def get_dict(json: list, defining_attributes: list):
@@ -48,7 +48,7 @@ def get_dict(json: list, defining_attributes: list):
             dct['order_id'] = i['order_id']
             dct['token_id'] = i['sell']['data']['token_id']
             if defining_attributes == ['name_hro']:
-                dct['name_hro'] = ' '.join(i['sell']['data']['properties']['name'].split(' ')[1:])
+                dct['name_hro'] = ' '.join(i['sell']['data']['properties']['name'].split(' ')[2:])
             else:
                 for j in defining_attributes:
                     dct[j] = i['sell']['data']['properties'][j]
@@ -56,7 +56,10 @@ def get_dict(json: list, defining_attributes: list):
                 dct['type2'] = i['buy']['type']
             else:
                 dct['type2'] = dct_token[i['buy']['data']['token_address']]
-            dct['amount_sold'] = int(i['buy']['data']['quantity'])/(10**18)
+            if dct['type2'] == 'USDC':
+                dct['amount_sold'] = int(i['buy']['data']['quantity'])/(10**6)
+            else:
+                dct['amount_sold'] = int(i['buy']['data']['quantity'])/(10**18)
             dct['updated_timestamp'] = i['updated_timestamp']
             lst.append(dct)
             
@@ -120,6 +123,7 @@ def get_filled_trades_from_start_day(days_prior, defining_attributes , token_add
 
 
     first_dict = get_dict(next_page, defining_attributes)
+    #print(next_page)
     first_df = pd.DataFrame(first_dict)
     whole_lst = [first_df]
     cursor = next_page['cursor']
@@ -205,7 +209,7 @@ market_percentage:int  = 0.2):
      #currency_one + '_USD', 'real_minimum_price']], on = ['name','rarity','quality','set'],how ='inner', suffixes=('_' + currency_two, '_' + currency_one))
     final_df = pd.merge(df_currency_one,dfmin_currency_two, on = defining_attributes,how ='inner')
     #print(final_df)
-    print(final_df)
+    #print(final_df)
     final_df.sort_values(defining_attributes + [currency_one + '_USD'], ascending= True)
     for i in defining_attributes:
         final_df[f'shift_{i}'] = final_df[i].shift(1,  fill_value = 0)
