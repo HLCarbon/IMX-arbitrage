@@ -9,6 +9,9 @@ How this is organized:
 - [**csvs**](https://github.com/HLCarbon/IMX-arbitrage/tree/main/csvs) - Folder to place the csvs downloaded/used by the class. There are two types of files:
    - Active trades
    - Filled trades
+   
 The file names are then suffixed with the address of the game that you want to analyze.
+
+***
 
 The goal is to eventually take this to AWS and once a day run the program to buy and sell NTF's in the games of my choosing.
