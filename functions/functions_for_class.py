@@ -1,13 +1,16 @@
 import datetime as dt
-from matplotlib.style import use
 import requests
 import pandas as pd
 from Naked.toolshed.shell import execute_js
 import urllib3 
-import json
 import time
+import warnings
+import sys
+warnings.filterwarnings("ignore")
 http = urllib3.PoolManager()
 pd.set_option('display.max_colwidth', None)
+
+
 
 #These are the keys that are associated with each token (coin)
 dct_token = {'0xacb3c6a43d15b907e8433077b6d38ae40936fe2c':'NOP',
@@ -15,7 +18,9 @@ dct_token = {'0xacb3c6a43d15b907e8433077b6d38ae40936fe2c':'NOP',
  '0x9ab7bb7fdc60f4357ecfef43986818a2a3569c62': 'GOG',
   '0xf57e7e7c23978c3caec3c3548e3d615c346e79ff': 'IMX',
   '0xed35af169af46a02ee13b9d79eb57d6d68c1749e':'OMI',
- '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48':'USDC'}
+ '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48':'USDC',
+ '0x4d224452801aced8b2f0aebe155379bb5d594381':'APE'}
+
 
 def get_current_data(from_sym='BTC', to_sym='USD', exchange='') -> int:
     #Goes to the website API and gets the price in dollars of the currency x
@@ -39,11 +44,11 @@ def get_dict(json: list, defining_attributes: list):
 
     :param json: data from website
     """    ''''''
-    sh = json['result']
+    result = json['result']
     #print(sh)
     lst = []
-    if len(sh)>0:
-        for i in sh:
+    if len(result)>0:
+        for i in result:
             dct = {}
             dct['order_id'] = i['order_id']
             dct['token_id'] = i['sell']['data']['token_id']
@@ -53,10 +58,14 @@ def get_dict(json: list, defining_attributes: list):
                 for j in defining_attributes:
                     dct[j] = i['sell']['data']['properties'][j]
             if i['buy']['type'] == 'ETH':
-                dct['type2'] = i['buy']['type']
+                dct['coin'] = i['buy']['type']
             else:
-                dct['type2'] = dct_token[i['buy']['data']['token_address']]
-            if dct['type2'] == 'USDC':
+                try:
+                    dct['coin'] = dct_token[i['buy']['data']['token_address']]
+                except KeyError:
+                    print(f"The coin address {i['buy']['data']['token_address']} isn't in the coin_token dictionary. Please manually add it in the file 'functions_for_class.'")
+                    dct['coin'] = 'Undefined'
+            if dct['coin'] == 'USDC':
                 dct['amount_sold'] = int(i['buy']['data']['quantity'])/(10**6)
             else:
                 dct['amount_sold'] = int(i['buy']['data']['quantity'])/(10**18)
@@ -99,6 +108,7 @@ def go_to_site(order_by='', site_type = 'orders', status = '',updated_min_timest
             response_data = response.json()
         except:
             time.sleep(2)
+            print('There was a problem loading the website:')
             print(f'URL:\n{url}')
             pass
     return response_data
@@ -198,7 +208,7 @@ def number_of_cards(x):
 
 def number_of_cards_sold_last_x_days(df_with_filled_trades ,df_with_minimum_price,defining_attributes, coin: str, days:int = 7):
     #gets the df by the coin x
-    df = df_with_filled_trades[df_with_filled_trades['type2']==coin]
+    df = df_with_filled_trades[df_with_filled_trades['coin']==coin]
     df = df[defining_attributes + ['updated_timestamp']]
     #The timestamps are not all in the same format, so I'm gonna correct that
     df.updated_timestamp = df.updated_timestamp.apply(lambda x: x[:-1] + ".000Z" if x[-4] == ':' else x)
@@ -223,15 +233,19 @@ market_percentage:int  = 0.2):
     #For each card, it compares the lowest price for each currency and calculates the difference in dollars.
     df1 = dc_with_every_trade.copy()
     #print(df1)
-    #print(df1.type2.unique())
+    #print(df1.coin.unique())
     #gets only the active trades that are selling for the coin 1
-    df_currency_one = df1[df1['type2']==currency_one]
+    df_currency_one = df1[df1['coin']==currency_one]
     #gets only the active trades that are selling for the coin 2
-    df_currency_two = df1[df1['type2']==currency_two]
+    df_currency_two = df1[df1['coin']==currency_two]
     #gets the minimum price in dollars for each card
     #print(df_currency_one)
     #print(df_currency_two)
-    dfmin_currency_two = df_currency_two.groupby(defining_attributes).amount_sold.min().reset_index()
+    try:
+        dfmin_currency_two = df_currency_two.groupby(defining_attributes).amount_sold.min().reset_index()
+    except KeyError:
+        print('Please download the data with the corrected defining_attributes.')
+        sys.exit()
     #print(dfmin_currency_two)
     #print(df_currency_one.head())
     df_currency_one[currency_one + '_USD'] = df_currency_one['amount_sold']*currency_to_usd[currency_one]
@@ -262,7 +276,11 @@ market_percentage:int  = 0.2):
         else:
             final_df.loc[i, 'positive'] = final_df.loc[i, 'average_sold']*market_percentage
         number = 0
-    final_df = final_df[final_df['positive'] >= 1]
+    try:
+        final_df = final_df[final_df['positive'] >= 1]
+    except KeyError:
+        print('Please change the defining_attributes to the correct ones.')
+
     #print(final_df)
     final_df['percentage'] = round(final_df[currency_two + '_USD']/final_df[currency_one + '_USD']*100 -100,2)
     final_df = final_df.sort_values(by = 'percentage', ascending = False)    
@@ -279,7 +297,7 @@ def export_to_buy_and_sell(df,percentage_lower:int, coin_to_buy = 'ETH', coin_to
     #Exports a dataframe to in the necessary format to the nde.js file
     #number of cards that I want to send to the file
     #gets the cards id that I want to buy for coin X, the price that I'm going to buy them for and the order id
-    df_to_export_to_buy = df[['order_id_' + coin_to_buy,'amount_sold_x', 'token_id_' + coin_to_buy]]
+    df_to_export_to_buy = df[['order_id','amount_sold_x', 'token_id']]
     #The value has to go times 10**18 and in a string form. If the coin is USDC, the value has to go as 10**6:
     df_to_export_to_buy['amount_sold_x'] = df_to_export_to_buy['amount_sold_x']*10**6
     df_to_export_to_buy['amount_sold_x'] = df_to_export_to_buy['amount_sold_x'].astype('int64')
@@ -287,8 +305,8 @@ def export_to_buy_and_sell(df,percentage_lower:int, coin_to_buy = 'ETH', coin_to
     if coin_to_buy != 'USDC':
         df_to_export_to_buy['amount_sold_x'] = df_to_export_to_buy['amount_sold_x'] + '000000000000'
     #The token id and order id also has to go in str form
-    df_to_export_to_buy['order_id_' + coin_to_buy] = df_to_export_to_buy['order_id_' + coin_to_buy].astype('str')
-    df_to_export_to_buy['token_id_' + coin_to_buy] = df_to_export_to_buy['token_id_' + coin_to_buy].astype('str')
+    df_to_export_to_buy['order_id'] = df_to_export_to_buy['order_id'].astype('str')
+    df_to_export_to_buy['token_id'] = df_to_export_to_buy['token_id'].astype('str')
     lst_to_export_to_buy = df_to_export_to_buy.values.tolist()
     with open('react_js/nft_to_buy.js', 'w',newline='') as data_file:
         data_file.write(add_strings_for_node(str(lst_to_export_to_buy)))
@@ -301,7 +319,7 @@ def export_to_buy_and_sell(df,percentage_lower:int, coin_to_buy = 'ETH', coin_to
 
     df['amount_sold_y'] = df['amount_sold_y']*(1-percentage_lower)
 
-    df_to_export_to_sell_divided = df[['token_id_' + coin_to_buy,'amount_sold_y']]
+    df_to_export_to_sell_divided = df[['token_id','amount_sold_y']]
     df_to_export_to_sell=df_to_export_to_sell_divided
     #I'm going to sell the card for 0.5% cheaper above the 8 percent fees
     df_to_export_to_sell['amount_sold_y'] = df_to_export_to_sell['amount_sold_y']*10**6
@@ -309,7 +327,7 @@ def export_to_buy_and_sell(df,percentage_lower:int, coin_to_buy = 'ETH', coin_to
     df_to_export_to_sell['amount_sold_y'] = df_to_export_to_sell['amount_sold_y'].astype('str')
     if coin_to_sell != 'USDC':
         df_to_export_to_sell['amount_sold_y'] = df_to_export_to_sell['amount_sold_y'] + '000000000000'
-    df_to_export_to_sell['token_id_' + coin_to_buy] = df_to_export_to_sell['token_id_' + coin_to_buy].astype('str')
+    df_to_export_to_sell['token_id'] = df_to_export_to_sell['token_id'].astype('str')
     lst_to_export_to_sell =df_to_export_to_sell.values.tolist()
     with open('react_js/nft_to_sell.js', 'w',newline='') as data_file:
         data_file.write(add_strings_for_node(str(lst_to_export_to_sell)))
@@ -323,7 +341,7 @@ def execute_trades(df, coin_to_buy: str = 'ETH', coin_to_sell: str = 'GODS', num
 cards_each_time:int = 10, percentage_above:int = 20, price_reduction = 0.005) ->None :
     #Selects cards that are with a margin of 20% and only the top 100 cards (in case there are a lot of them and I don't have money).
     df = df[df['percentage']>percentage_above]
-    if number_of_cards >0:
+    if number_of_total_cards >0:
         df = df.iloc[:number_of_total_cards]
     #Sells the cards 10 at a time because the marketplace API only allows me to make 10 trades per second.
     lst = []
@@ -332,8 +350,11 @@ cards_each_time:int = 10, percentage_above:int = 20, price_reduction = 0.005) ->
             new_df = df.iloc[cards_each_time*(i):(cards_each_time*(i+1))]
         else:
             new_df = df.iloc[cards_each_time*(i):]
-        export_to_buy_and_sell(new_df, coin_to_buy,coin_to_sell, percentage_lower=price_reduction)
+        export_to_buy_and_sell(new_df, coin_to_buy = coin_to_buy,coin_to_sell = coin_to_sell, percentage_lower=price_reduction)
         p1 = execute_js('react_js/buy.js')
+        if p1 == False:
+            print("Something went wrong and we weren't able to buy and sell any of the cards")
+            sys.exit()
         p2 = execute_js('react_js/sell.js')
         lst +=[p1,p2]
     if all(lst):

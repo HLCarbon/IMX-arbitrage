@@ -3,6 +3,7 @@ import pandas as pd
 from functions import functions_for_class as fc
 from os import path
 import datetime as dt
+import sys
 
 #for book, in name do str.split('#')[0]
 
@@ -92,13 +93,15 @@ class game:
             return self.arbitrage_table
         except AttributeError:
             print('Please get both the active trades and the filled trades dataframes before attempting to get the arbitrage table.\n')
-    def execute_arbitrage(self, percentage_above = 20, price_reduction = 0.005, number_of_cards=0, cards_each_time=10):
+            sys.exit()
+    def execute_trades(self, percentage_above = 20, price_reduction = 0.005, number_of_cards=0, cards_each_time=10):
         try:
             fc.execute_trades(self.arbitrage_table, self.coin_to_buy, self.coin_to_sell, 
         number_of_total_cards=number_of_cards, cards_each_time=cards_each_time, percentage_above=percentage_above,
         price_reduction=price_reduction)
         except AttributeError:
             print('Please get the arbitrage table first by executing the function "determine_arbitrage".')
+            sys.exit()
 
 
     
