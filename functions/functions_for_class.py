@@ -23,6 +23,14 @@ dct_token = {'0xacb3c6a43d15b907e8433077b6d38ae40936fe2c':'NOP',
 
 
 def get_current_data(from_sym='BTC', to_sym='USD', exchange='') -> int:
+    """
+    Gets the coin values
+
+    from_sym: Coin selling
+    to_sym: Coin buying (Usually USD)
+    exchange: Currency exchange that you want to use. If none is given, the API decides
+    return: Returns the coin price
+    """    
     #Goes to the website API and gets the price in dollars of the currency x
     url = 'https://min-api.cryptocompare.com/data/price'    
     
@@ -38,20 +46,22 @@ def get_current_data(from_sym='BTC', to_sym='USD', exchange='') -> int:
 
     return data['USD']
 
-def get_dict(json: list, defining_attributes: list):
+def get_dict(json: list, defining_attributes: list) -> list:
     """
-    get_dict Transforms the json data into a list of dictionaries
+    Transforms the json data into a list of dictionaries
 
-    :param json: data from website
+    json: data from website
     """    ''''''
     result = json['result']
-    #print(result)
     lst = []
     if len(result)>0:
         for i in result:
             dct = {}
             dct['order_id'] = i['order_id']
             dct['token_id'] = i['sell']['data']['token_id']
+            # The hro game is different than the other, since every image is slightly different since it has the NTF id in the png. Some images 
+            # are the same, however, they are prefixed by the card id (which is always different) and the year the card was minted. So I remove both 
+            # of these here to be able to do the arbitrage.
             if defining_attributes == ['name_hro']:
                 dct['name_hro'] = ' '.join(i['sell']['data']['properties']['name'].split(' ')[2:])
             else:
@@ -81,9 +91,9 @@ def get_dict(json: list, defining_attributes: list):
 
 def go_to_site(order_by='', site_type = 'orders', status = '',updated_min_timestamp='',
  cursor = '', sell_token_address = '', user = '', page_size = '200',
- sell_metadata = '', querystring = ''):
+ sell_metadata = '', querystring = '') -> list:
     """
-    go_to_site This is how you ask the API for information
+    This is how you ask the API for information
 
     """ 
     url = "https://api.x.immutable.com/v1/" + site_type
@@ -118,10 +128,13 @@ def go_to_site(order_by='', site_type = 'orders', status = '',updated_min_timest
             pass
     return response_data
 
-def get_all_orders(defining_attributes: list, token_address = '0xacb3c6a43d15b907e8433077b6d38ae40936fe2c'):
-    #dictionary_with_all_selling_cards = pd.read_csv('data_active_trades_for_sale.csv', sep = ';', encoding='cp1252', low_memory=False)
-    #dictionary_with_all_selling_cards = dictionary_with_all_selling_cards.sort_values('updated_timestamp', ascending = False)
-    #first_time = correct_time_stamp(dictionary_with_all_selling_cards.iloc[0]['timestamp'], second = 1)
+def get_all_orders(defining_attributes: list, token_address = '0xacb3c6a43d15b907e8433077b6d38ae40936fe2c') -> pd.DataFrame:
+    """
+    This gets all the active orders of the desired game. The API gives back 200 orders each time. This function joins all the 200
+    and returns a dataframe with everything, also saving a csv with the information.
+    return: Dataframe with all active trades.
+    """    
+    print('Starting to download the active trades:\n')
     first_page = go_to_site(status = 'active', page_size = '200', cursor = '',
      sell_token_address = token_address)
     remaining = first_page['remaining']
@@ -150,23 +163,22 @@ def get_all_orders(defining_attributes: list, token_address = '0xacb3c6a43d15b90
     whole_df.sort_values('updated_timestamp', ascending = False,  inplace = True, ignore_index = True)
     whole_df['token_id'] = whole_df['token_id'].astype(str)
     whole_df.to_csv(f'csvs/active_trades_for_sale_{token_address}.csv', sep = ';', index = False, encoding = 'utf-8-sig')
-    
-    #df_updated = df_updated.drop('Unnamed: 0', axis = 1)
 
     return whole_df
 
 
-def get_filled_trades_from_start_day(days_prior, defining_attributes , token_address = '0xacb3c6a43d15b907e8433077b6d38ae40936fe2c', ):
+def get_filled_trades_from_start_day(days_prior:int, defining_attributes: list, token_address = '0xacb3c6a43d15b907e8433077b6d38ae40936fe2c' ) -> pd.DataFrame:
     """
-    get_filled_trades_from_start_day Returns all the trades that were done in the marketplace days_prior days before now
+    Returns all the trades that were done in the marketplace days_prior days before now.
+    This gets all the active orders of the desired game. The API gives back 200 orders each time. This function joins all the 200
+    and returns a dataframe with everything, also saving a csv with the information.
+    return: Dataframe with all active trades.
 
-    _extended_summary_
-
-    :param days_prior: days prior to today
-    :param token_address: game address that you want to analyze
+    days_prior: days prior to today
+    token_address: game address that you want to analyze
     :return: Dataframe containing all the trades
     """    
-
+    print('Starting to download the filled trades:\n')
 
     time_start = dt.datetime.strftime(dt.datetime.now()-dt.timedelta(days = days_prior),"%Y-%m-%dT%H:%M:%S.%fZ")
 
@@ -203,15 +215,17 @@ def get_filled_trades_from_start_day(days_prior, defining_attributes , token_add
     return whole_df
 
 
-def number_of_cards(x):
-    print(x)
-    if x.name == x.shift_name and x.quality == x.shift_quality:
-        number = x.shift(-1)['positive']-1
-    else:
-        number = x.average_sold
-    return number
 
-def number_of_cards_sold_last_x_days(df_with_filled_trades ,df_with_minimum_price,defining_attributes, coin: str, days:int = 7):
+
+def number_of_cards_sold_last_x_days(df_with_filled_trades:pd.DataFrame ,df_with_minimum_price:pd.DataFrame,
+defining_attributes:list, coin: str, days:int = 7) -> pd.DataFrame:
+    """
+    For each type of NTF (usually NFT's with the same image), it groups each NTF by the defining_attributes and 
+    calculates how many of each of them were sold per day over the last x days.
+    
+
+    return: df_with_filled trades with a new column saying how many trades were made per day over the last x days.
+    """    
     #gets the df by the coin x
     df = df_with_filled_trades[df_with_filled_trades['coin']==coin]
     df = df[defining_attributes + ['updated_timestamp']]
@@ -220,11 +234,15 @@ def number_of_cards_sold_last_x_days(df_with_filled_trades ,df_with_minimum_pric
     #transform timestamps into datetime
     df.updated_timestamp = df.updated_timestamp.apply(lambda x: dt.datetime.strptime(x, "%Y-%m-%dT%H:%M:%S.%fZ") )
     #looks at the most recent timestamp
-    last_sold_time = df.iloc[-1]['updated_timestamp']
+    try:
+        last_sold_time = df.iloc[-1]['updated_timestamp']
+    except IndexError:
+        print(f'There were no cards that sold for the currency {coin}. Please try again.')
+        sys.exit()
     #get's only the trades that happened at most, x days before the last trade
     last_x_days = last_sold_time-dt.timedelta(days = days)
     last_x_days_df = df[df.updated_timestamp > last_x_days]
-    #Get's the average number of trades per day over the last 7 days for each card
+    #Get's the average number of trades per day over the last x days for each card
     counter_df = last_x_days_df.groupby(defining_attributes).updated_timestamp.count()/days
     counter_df = counter_df.reset_index()
     counter_df.rename(columns = {'updated_timestamp':'average_sold'}, inplace = True)
@@ -232,45 +250,47 @@ def number_of_cards_sold_last_x_days(df_with_filled_trades ,df_with_minimum_pric
     return df_with_minimum_price
 
 
-def get_arbitrage_from_2_currencies(currency_one:str,currency_two:str,dc_with_every_trade, 
-filled_trades , currency_to_usd: dict, defining_attributes: list, days_average:int = 7,
-market_percentage:int  = 0.2):
+def get_arbitrage_from_2_currencies(currency_one:str,currency_two:str,dc_with_every_trade:pd.DataFrame, 
+filled_trades:pd.DataFrame , currency_to_usd: dict, defining_attributes: list, days_average:int = 7,
+market_percentage:int  = 0.2) ->pd.DataFrame:
+    """
+    Using the filled trades and the active trades selling for both coins, it creates a df with each type of NTF
+    and the percentage (currency_one in USD)/(currency_two in USD) - 1. 
+
+    currency_one: currency you want to use to buy
+    currency_two: currency you want to sell in
+    dc_with_every_trade: df with active trades
+    currency_to_usd: dictionary with the price of each coin
+    days_average: number of days to take into account and do the average
+    market_percentage: value from 0-1 of the ratio of daily trades that you want to buy/sell. If a card as an average selling of 10 per day, a market_perecntage
+    of 0.2 will mean that the resulting dataframe will only show 10*0.2 = 2 NFT's with the image. The 2 NFT's that are shown are the ones selling with 
+    the cheapest currency_one.
+    return: Dataframe with each card type ordered by the percentage between the coin_buying and the coin_selling.
+    """    
     #For each card, it compares the lowest price for each currency and calculates the difference in dollars.
     df1 = dc_with_every_trade.copy()
-    #print(df1)
-    #print(df1.coin.unique())
     #gets only the active trades that are selling for the coin 1
     df_currency_one = df1[df1['coin']==currency_one]
     #gets only the active trades that are selling for the coin 2
     df_currency_two = df1[df1['coin']==currency_two]
     #gets the minimum price in dollars for each card
-    #print(df_currency_one)
-    #print(df_currency_two)
     try:
         dfmin_currency_two = df_currency_two.groupby(defining_attributes).amount_sold.min().reset_index()
     except KeyError:
         print('Please download the data with the corrected defining_attributes.')
         sys.exit()
-    #print(dfmin_currency_two)
-    #print(df_currency_one.head())
+
     df_currency_one[currency_one + '_USD'] = df_currency_one['amount_sold']*currency_to_usd[currency_one]
     dfmin_currency_two[currency_two + '_USD'] = dfmin_currency_two['amount_sold']*currency_to_usd[currency_two]
-    #print(dfmin_currency_two)
+
     #for the coin that I'm going to sell the cards in, selects only those that have been selling for an average of x for y days
     dfmin_currency_two = number_of_cards_sold_last_x_days(filled_trades,dfmin_currency_two,defining_attributes, currency_two, days_average)
-    #print(dfmin_currency_two)
     #merges the buying df with the sell df
-    #final_df = pd.merge(dfmin_currency_two[['order_id_'+currency_two,'token_id_' +currency_two,'name','rarity','quality','set',currency_two + '_USD',
-     #'amount_sold']],dfmin_currency_one[['order_id_' + currency_one,'token_id_' + currency_one,'name','rarity','quality','set',
-     #currency_one + '_USD', 'amount_sold']], on = ['name','rarity','quality','set'],how ='inner', suffixes=('_' + currency_two, '_' + currency_one))
     final_df = pd.merge(df_currency_one,dfmin_currency_two, on = defining_attributes,how ='inner')
-    #print(final_df)
-    #print(final_df)
     final_df.sort_values(defining_attributes + [currency_one + '_USD'], ascending= True)
+    'The way that I found to be able to select only the cheapest cards selling for currency_one that had an average selling number >= of market_percentage'
     for i in defining_attributes:
         final_df[f'shift_{i}'] = final_df[i].shift(1,  fill_value = 0)
-    #print(final_df.head(20))
-
     for i in range (len(final_df)):
         number = 0
         for j in defining_attributes:
@@ -285,23 +305,24 @@ market_percentage:int  = 0.2):
         final_df = final_df[final_df['positive'] >= 1]
     except KeyError:
         print('Please change the defining_attributes to the correct ones.')
-
-    #print(final_df)
     final_df['percentage'] = round(final_df[currency_two + '_USD']/final_df[currency_one + '_USD']*100 -100,2)
     final_df = final_df.sort_values(by = 'percentage', ascending = False)    
 
     return final_df
         
 
-def add_strings_for_node(string):
+def add_strings_for_node(string:str) ->str:
     #To the cards that I'm going to sell it adds this so the node.js file can then use it to execute the trade.
     string = "const lst = " + string + "\n\nmodule.exports.lst = lst"
     return string
 
 def export_to_buy_and_sell(df,percentage_lower:int, coin_to_buy = 'ETH', coin_to_sell = 'GODS', ) -> None:
-    #Exports a dataframe to in the necessary format to the nde.js file
-    #number of cards that I want to send to the file
-    #gets the cards id that I want to buy for coin X, the price that I'm going to buy them for and the order id
+    """
+    Exports a dataframe to in the necessary format to the node.js file.
+    .gets the cards id that I want to buy for coin X, the price that I'm going to buy them for and the order id.
+
+    percentage_lower: how much lower than the lowest priced NFT do I want to sell for
+    """    
     df_to_export_to_buy = df[['order_id','amount_sold_x', 'token_id']]
     #The value has to go times 10**18 and in a string form. If the coin is USDC, the value has to go as 10**6:
     df_to_export_to_buy['amount_sold_x'] = df_to_export_to_buy['amount_sold_x']*10**6
@@ -320,13 +341,10 @@ def export_to_buy_and_sell(df,percentage_lower:int, coin_to_buy = 'ETH', coin_to
 
 
     #same thing as above but now I'm selling the cards bought above with coin Y
-    
-
     df['amount_sold_y'] = df['amount_sold_y']*(1-percentage_lower)
-
     df_to_export_to_sell_divided = df[['token_id','amount_sold_y']]
     df_to_export_to_sell=df_to_export_to_sell_divided
-    #I'm going to sell the card for 0.5% cheaper above the 8 percent fees
+    #I'm going to sell the card for 0.5% cheaper
     df_to_export_to_sell['amount_sold_y'] = df_to_export_to_sell['amount_sold_y']*10**6
     df_to_export_to_sell['amount_sold_y'] = df_to_export_to_sell['amount_sold_y'].astype('uint64')
     df_to_export_to_sell['amount_sold_y'] = df_to_export_to_sell['amount_sold_y'].astype('str')
@@ -344,14 +362,22 @@ def export_to_buy_and_sell(df,percentage_lower:int, coin_to_buy = 'ETH', coin_to
     
 def execute_trades(df, coin_to_buy: str = 'ETH', coin_to_sell: str = 'GODS', number_of_total_cards: int = 0, 
 cards_each_time:int = 10, percentage_above:int = 20, price_reduction = 0.005) ->None :
-    #Selects cards that are with a margin of 20% and only the top 100 cards (in case there are a lot of them and I don't have money).
+    """
+    Exports the trades that I want to make and executes the node.js files. For safety reason (it has personal information), I will not give the 
+    react.js file.
+
+    df: df with the arbitrage done
+    number_of_total_cards: _in case I only want to sell x cards, in case I don't have enough money
+    cards_each_time: Sells the cards 10 at a time because the marketplace API only allows me to make 10 trades per second.
+    percentage_above: Percentage of arbitrage above which you want to execute the trades.
+    price_reduction: how much lower than the lowest priced NFT do I want to sell for
+    """    
     df = df[df['percentage']>percentage_above]
     if number_of_total_cards >0:
         df = df.iloc[:number_of_total_cards]
     if df.empty:
         print('The exporting table is empty. Check the coins used, the market_percentage and/or the percentage parameters.')
         sys.exit()
-    #Sells the cards 10 at a time because the marketplace API only allows me to make 10 trades per second.
     lst = []
     for i in range(int(len(df)/cards_each_time)+1):
         if i<len(df)/cards_each_time:
@@ -361,14 +387,14 @@ cards_each_time:int = 10, percentage_above:int = 20, price_reduction = 0.005) ->
         export_to_buy_and_sell(new_df, coin_to_buy = coin_to_buy,coin_to_sell = coin_to_sell, percentage_lower=price_reduction)
         p1 = execute_js('react_js/buy.js')
         if p1 == False:
-            print("Something went wrong and we weren't able to buy and sell any of the cards")
+            print("Something went wrong and we weren't able to buy and sell any of the cards.")
             sys.exit()
         p2 = execute_js('react_js/sell.js')
         lst +=[p1,p2]
     if all(lst):
         print(f"Everything worked fine, we bought and put in the market {len(df)} NFT's!")
     else:
-        print("Something went wrong and we weren't able to buy and sell the cards")
+        print("Something went wrong and we weren't able to buy and sell the cards.")
             
 
 
