@@ -103,6 +103,43 @@ def go_to_site(order_by='', site_type = 'orders', status = '',updated_min_timest
             pass
     return response_data
 
+def get_all_orders(defining_attributes: list, token_address = '0xacb3c6a43d15b907e8433077b6d38ae40936fe2c'):
+    #dictionary_with_all_selling_cards = pd.read_csv('data_active_trades_for_sale.csv', sep = ';', encoding='cp1252', low_memory=False)
+    #dictionary_with_all_selling_cards = dictionary_with_all_selling_cards.sort_values('updated_timestamp', ascending = False)
+    #first_time = correct_time_stamp(dictionary_with_all_selling_cards.iloc[0]['timestamp'], second = 1)
+    first_page = go_to_site(status = 'active', page_size = '200', cursor = '',
+     sell_token_address = token_address)
+    remaining = first_page['remaining']
+    cursor = first_page['cursor']
+    first_dict = get_dict(first_page, defining_attributes)
+    first_df = pd.DataFrame(first_dict)
+    whole_lst = [first_df]
+    #print(whole_lst)
+    while cursor and remaining >0: 
+        next_page = go_to_site(status = 'active', page_size = '200', cursor  = cursor,
+         sell_token_address = token_address)
+        if next_page != {'message': 'Endpoint request timed out'} and next_page != {'code': 'internal_server_error', 'message': 'The server encountered an internal error and was unable to process your request'}:               
+            cursor = next_page['cursor']
+            next_dict = get_dict(next_page,defining_attributes)
+            next_df = pd.DataFrame(next_dict)
+            whole_lst += [next_df]
+            #print(len(whole_lst))
+            if len(whole_lst[-1])>0:
+                print(whole_lst[-1]['updated_timestamp'].iloc[0])
+            else:
+                pass
+    
+    
+    whole_df = pd.concat(whole_lst, ignore_index = True)
+    whole_df = whole_df.drop_duplicates(ignore_index = True, subset = 'order_id')
+    whole_df.sort_values('updated_timestamp', ascending = False,  inplace = True, ignore_index = True)
+    whole_df['token_id'] = whole_df['token_id'].astype(str)
+    whole_df.to_csv(f'csvs/active_trades_for_sale_{token_address}.csv', sep = ';', index = False, encoding = 'utf-8-sig')
+    
+    #df_updated = df_updated.drop('Unnamed: 0', axis = 1)
+
+    return whole_df
+
 
 def get_filled_trades_from_start_day(days_prior, defining_attributes , token_address = '0xacb3c6a43d15b907e8433077b6d38ae40936fe2c', ):
     """
@@ -205,8 +242,8 @@ market_percentage:int  = 0.2):
     #print(dfmin_currency_two)
     #merges the buying df with the sell df
     #final_df = pd.merge(dfmin_currency_two[['order_id_'+currency_two,'token_id_' +currency_two,'name','rarity','quality','set',currency_two + '_USD',
-     #'real_minimum_price']],dfmin_currency_one[['order_id_' + currency_one,'token_id_' + currency_one,'name','rarity','quality','set',
-     #currency_one + '_USD', 'real_minimum_price']], on = ['name','rarity','quality','set'],how ='inner', suffixes=('_' + currency_two, '_' + currency_one))
+     #'amount_sold']],dfmin_currency_one[['order_id_' + currency_one,'token_id_' + currency_one,'name','rarity','quality','set',
+     #currency_one + '_USD', 'amount_sold']], on = ['name','rarity','quality','set'],how ='inner', suffixes=('_' + currency_two, '_' + currency_one))
     final_df = pd.merge(df_currency_one,dfmin_currency_two, on = defining_attributes,how ='inner')
     #print(final_df)
     #print(final_df)
@@ -238,46 +275,46 @@ def add_strings_for_node(string):
     string = "const lst = " + string + "\n\nmodule.exports.lst = lst"
     return string
 
-def export_to_buy_and_sell(df, coin_to_buy = 'ETH', coin_to_sell = 'GODS') -> None:
+def export_to_buy_and_sell(df,percentage_lower:int, coin_to_buy = 'ETH', coin_to_sell = 'GODS', ) -> None:
     #Exports a dataframe to in the necessary format to the nde.js file
     #number of cards that I want to send to the file
     #gets the cards id that I want to buy for coin X, the price that I'm going to buy them for and the order id
-    df_to_export_to_buy = df[['order_id_' + coin_to_buy,'real_minimum_price_x', 'token_id_' + coin_to_buy]]
-    #The value has to go times 10**18 and in a string form
-    df_to_export_to_buy['real_minimum_price_x'] = df_to_export_to_buy['real_minimum_price_x']*10**10
-    df_to_export_to_buy['real_minimum_price_x'] = df_to_export_to_buy['real_minimum_price_x'].astype('int64')
-    df_to_export_to_buy['real_minimum_price_x'] = df_to_export_to_buy['real_minimum_price_x'].astype('str')
-    df_to_export_to_buy['real_minimum_price_x'] = df_to_export_to_buy['real_minimum_price_x'] + '00000000'
+    df_to_export_to_buy = df[['order_id_' + coin_to_buy,'amount_sold_x', 'token_id_' + coin_to_buy]]
+    #The value has to go times 10**18 and in a string form. If the coin is USDC, the value has to go as 10**6:
+    df_to_export_to_buy['amount_sold_x'] = df_to_export_to_buy['amount_sold_x']*10**6
+    df_to_export_to_buy['amount_sold_x'] = df_to_export_to_buy['amount_sold_x'].astype('int64')
+    df_to_export_to_buy['amount_sold_x'] = df_to_export_to_buy['amount_sold_x'].astype('str')
+    if coin_to_buy != 'USDC':
+        df_to_export_to_buy['amount_sold_x'] = df_to_export_to_buy['amount_sold_x'] + '000000000000'
     #The token id and order id also has to go in str form
     df_to_export_to_buy['order_id_' + coin_to_buy] = df_to_export_to_buy['order_id_' + coin_to_buy].astype('str')
     df_to_export_to_buy['token_id_' + coin_to_buy] = df_to_export_to_buy['token_id_' + coin_to_buy].astype('str')
     lst_to_export_to_buy = df_to_export_to_buy.values.tolist()
-    with open('C:/Users/Utilizador/Desktop/Python/IMX/JavaScript/Buy_' + coin_to_buy + '_sell_' + coin_to_sell + '_arbitrage/arbitrage_' + coin_to_buy + '_to_' + coin_to_sell + '_buy.js', 'w',newline='') as data_file:
-        data_file.write(add_strings_for_node(str(lst_to_export_to_buy)) ) 
+    with open('react_js/nft_to_buy.js', 'w',newline='') as data_file:
+        data_file.write(add_strings_for_node(str(lst_to_export_to_buy)))
+    with open('react_js/coin_to_buy.txt', 'w',newline='') as data_file:
+        data_file.write(coin_to_buy)
 
 
     #same thing as above but now I'm selling the cards bought above with coin Y
-    df['market_percentage'] = df['quality'].map({
-        'Meteorite':0.05,
-        'Shadow':0.04,
-        'Gold':0.03,
-        'Diamond':0.01
-    })
+    
 
-    df['amount_sold'] = df['amount_sold']*\
-        (1-0.03-0.005-df['market_percentage'])
+    df['amount_sold_y'] = df['amount_sold_y']*(1-percentage_lower)
 
-    df_to_export_to_sell_divided = df[['token_id_' + coin_to_buy,'amount_sold']]
+    df_to_export_to_sell_divided = df[['token_id_' + coin_to_buy,'amount_sold_y']]
     df_to_export_to_sell=df_to_export_to_sell_divided
     #I'm going to sell the card for 0.5% cheaper above the 8 percent fees
-    df_to_export_to_sell['amount_sold'] = df_to_export_to_sell['amount_sold']*10**10
-    df_to_export_to_sell['amount_sold'] = df_to_export_to_sell['amount_sold'].astype('uint64')
-    df_to_export_to_sell['amount_sold'] = df_to_export_to_sell['amount_sold'].astype('str')
-    df_to_export_to_sell['amount_sold'] = df_to_export_to_sell['amount_sold'] + '00000000'
+    df_to_export_to_sell['amount_sold_y'] = df_to_export_to_sell['amount_sold_y']*10**6
+    df_to_export_to_sell['amount_sold_y'] = df_to_export_to_sell['amount_sold_y'].astype('uint64')
+    df_to_export_to_sell['amount_sold_y'] = df_to_export_to_sell['amount_sold_y'].astype('str')
+    if coin_to_sell != 'USDC':
+        df_to_export_to_sell['amount_sold_y'] = df_to_export_to_sell['amount_sold_y'] + '000000000000'
     df_to_export_to_sell['token_id_' + coin_to_buy] = df_to_export_to_sell['token_id_' + coin_to_buy].astype('str')
     lst_to_export_to_sell =df_to_export_to_sell.values.tolist()
-    with open('C:/Users/Utilizador/Desktop/Python/IMX/JavaScript/Buy_' + coin_to_buy + '_sell_' + coin_to_sell + '_arbitrage/arbitrage_' + coin_to_buy + '_to_' + coin_to_sell + '_sell.js', 'w',newline='') as data_file:
+    with open('react_js/nft_to_sell.js', 'w',newline='') as data_file:
         data_file.write(add_strings_for_node(str(lst_to_export_to_sell)))
+    with open('react_js/coin_to_sell.txt', 'w',newline='') as data_file:
+        data_file.write(coin_to_sell)
 
     
     
@@ -294,45 +331,10 @@ cards_each_time:int = 10, percentage_above:int = 20) ->None :
             else:
                 new_df = df.iloc[cards_each_time*(i):]
             export_to_buy_and_sell(new_df, coin_to_buy,coin_to_sell)
-            p = execute_js('C:/Users/Utilizador/Desktop/Python/IMX/JavaScript/Buy_{}_sell_{}_arbitrage/buy.js'.format(coin_to_buy, coin_to_sell))
-            p = execute_js('C:/Users/Utilizador/Desktop/Python/IMX/JavaScript/Buy_{}_sell_{}_arbitrage/sell.js'.format(coin_to_buy, coin_to_sell))
+            p = execute_js('react_js/buy.js')
+            p = execute_js('react_js/sell.js')
             print(str(p) + ' ' + str(i))
 
-def get_all_orders(defining_attributes: list, token_address = '0xacb3c6a43d15b907e8433077b6d38ae40936fe2c'):
-    #dictionary_with_all_selling_cards = pd.read_csv('data_active_trades_for_sale.csv', sep = ';', encoding='cp1252', low_memory=False)
-    #dictionary_with_all_selling_cards = dictionary_with_all_selling_cards.sort_values('updated_timestamp', ascending = False)
-    #first_time = correct_time_stamp(dictionary_with_all_selling_cards.iloc[0]['timestamp'], second = 1)
-    first_page = go_to_site(status = 'active', page_size = '200', cursor = '',
-     sell_token_address = token_address)
-    remaining = first_page['remaining']
-    cursor = first_page['cursor']
-    first_dict = get_dict(first_page, defining_attributes)
-    first_df = pd.DataFrame(first_dict)
-    whole_lst = [first_df]
-    #print(whole_lst)
-    while cursor and remaining >0: 
-        next_page = go_to_site(status = 'active', page_size = '200', cursor  = cursor,
-         sell_token_address = token_address)
-        if next_page != {'message': 'Endpoint request timed out'} and next_page != {'code': 'internal_server_error', 'message': 'The server encountered an internal error and was unable to process your request'}:               
-            cursor = next_page['cursor']
-            next_dict = get_dict(next_page,defining_attributes)
-            next_df = pd.DataFrame(next_dict)
-            whole_lst += [next_df]
-            #print(len(whole_lst))
-            if len(whole_lst[-1])>0:
-                print(whole_lst[-1]['updated_timestamp'].iloc[0])
-            else:
-                pass
-    
-    
-    whole_df = pd.concat(whole_lst, ignore_index = True)
-    whole_df = whole_df.drop_duplicates(ignore_index = True, subset = 'order_id')
-    whole_df.sort_values('updated_timestamp', ascending = False,  inplace = True, ignore_index = True)
-    whole_df['token_id'] = whole_df['token_id'].astype(str)
-    whole_df.to_csv(f'csvs/active_trades_for_sale_{token_address}.csv', sep = ';', index = False, encoding = 'utf-8-sig')
-    
-    #df_updated = df_updated.drop('Unnamed: 0', axis = 1)
 
-    return whole_df
        
     

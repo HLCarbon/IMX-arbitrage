@@ -88,8 +88,6 @@ class game:
         coin_price_dict, self.defining_attributes, self.days, market_percentage=daily_market_percentage)
         return self.arbitrage_table
 
-
-    
     
 
 
