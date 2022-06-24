@@ -43,14 +43,11 @@ class game:
     
     def change_defining_attributes(self, new_attributes:list):
         self.defining_attributes = new_attributes
-    def get_metadata_schema(self):
-        response = fc.go_to_site(site_type = 'orders', sell_token_address = self.address)
-        token_id = response['result'][0]['sell']['data']['token_id']
-        token_address = response['result'][0]['sell']['data']['token_address']
-        response = fc.go_to_site(site_type = f'assets/{token_address}/{token_id}')
-        metadata = response['metadata']
-        print(metadata)
-        df = pd.Series(metadata)
+    def get_nft_properties(self):
+        response = fc.go_to_site(site_type = 'orders', sell_token_address = self.address, status = 'active')
+        properties= response['result'][0]['sell']['data']['properties']
+        df = pd.Series(properties)
+        df = df.drop('collection')
         df = pd.DataFrame(df)
         df.rename(columns = {0:'Values'}, inplace = True)
 
@@ -91,7 +88,7 @@ class game:
             self.arbitrage_table = fc.get_arbitrage_from_2_currencies(coin_to_buy, coin_to_sell, self.active_trades, self.filled_trades,
             coin_price_dict, self.defining_attributes, self.days, market_percentage=daily_market_percentage)
             if self.arbitrage_table.empty:
-                print('The final table is empty. Check the coins used or the market_percentage')
+                print('The final table is empty. Check the coins used or the market_percentage.')
                 sys.exit()
             return self.arbitrage_table
         except AttributeError:

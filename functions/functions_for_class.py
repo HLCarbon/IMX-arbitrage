@@ -45,7 +45,7 @@ def get_dict(json: list, defining_attributes: list):
     :param json: data from website
     """    ''''''
     result = json['result']
-    #print(sh)
+    #print(result)
     lst = []
     if len(result)>0:
         for i in result:
@@ -56,7 +56,12 @@ def get_dict(json: list, defining_attributes: list):
                 dct['name_hro'] = ' '.join(i['sell']['data']['properties']['name'].split(' ')[2:])
             else:
                 for j in defining_attributes:
-                    dct[j] = i['sell']['data']['properties'][j]
+                    try:
+                        dct[j] = i['sell']['data']['properties'][j]
+                    except KeyError:
+                        print("The parameter(s) used as the defining attributes are not present in the NFT's properties. Please change them.")
+                        sys.exit()
+
             if i['buy']['type'] == 'ETH':
                 dct['coin'] = i['buy']['type']
             else:
