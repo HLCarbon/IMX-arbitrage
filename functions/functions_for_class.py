@@ -319,21 +319,28 @@ def export_to_buy_and_sell(df,percentage_lower:int, coin_to_buy = 'ETH', coin_to
     
     
     
-def execute_trades(df, coin_to_buy: str = 'ETH', coin_to_sell: str = 'GODS', number_of_total_cards: int = 100, 
-cards_each_time:int = 10, percentage_above:int = 20) ->None :
+def execute_trades(df, coin_to_buy: str = 'ETH', coin_to_sell: str = 'GODS', number_of_total_cards: int = 0, 
+cards_each_time:int = 10, percentage_above:int = 20, price_reduction = 0.005) ->None :
     #Selects cards that are with a margin of 20% and only the top 100 cards (in case there are a lot of them and I don't have money).
     df = df[df['percentage']>percentage_above]
-    df = df.head(number_of_total_cards)
+    if number_of_cards >0:
+        df = df.iloc[:number_of_total_cards]
     #Sells the cards 10 at a time because the marketplace API only allows me to make 10 trades per second.
+    lst = []
     for i in range(int(len(df)/cards_each_time)+1):
-            if i<len(df)/cards_each_time:
-                new_df = df.iloc[cards_each_time*(i):(cards_each_time*(i+1))]
-            else:
-                new_df = df.iloc[cards_each_time*(i):]
-            export_to_buy_and_sell(new_df, coin_to_buy,coin_to_sell)
-            p = execute_js('react_js/buy.js')
-            p = execute_js('react_js/sell.js')
-            print(str(p) + ' ' + str(i))
+        if i<len(df)/cards_each_time:
+            new_df = df.iloc[cards_each_time*(i):(cards_each_time*(i+1))]
+        else:
+            new_df = df.iloc[cards_each_time*(i):]
+        export_to_buy_and_sell(new_df, coin_to_buy,coin_to_sell, percentage_lower=price_reduction)
+        p1 = execute_js('react_js/buy.js')
+        p2 = execute_js('react_js/sell.js')
+        lst +=[p1,p2]
+    if all(lst):
+        print(f"Everything worked fine, we bought and put in the market {len(df)} NFT's!")
+    else:
+        print("Something went wrong and we weren't able to buy and sell the cards")
+            
 
 
        

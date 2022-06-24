@@ -81,12 +81,25 @@ class game:
         else:
             print('There is no active trades csv.\nPlease use the download_active_trades function first.')
     def determine_arbitrage(self, coin_to_buy, coin_to_sell, daily_market_percentage = 0.2):
-        coin_to_buy_usd = fc.get_current_data(coin_to_buy)
-        coin_to_sell_usd = fc.get_current_data(coin_to_sell)
-        coin_price_dict = {coin_to_buy:coin_to_buy_usd, coin_to_sell:coin_to_sell_usd}
-        self.arbitrage_table = fc.get_arbitrage_from_2_currencies(coin_to_buy, coin_to_sell, self.active_trades, self.filled_trades,
-        coin_price_dict, self.defining_attributes, self.days, market_percentage=daily_market_percentage)
-        return self.arbitrage_table
+        try:
+            self.coin_to_buy = coin_to_buy
+            self.coin_to_sell = coin_to_sell
+            coin_to_buy_usd = fc.get_current_data(coin_to_buy)
+            coin_to_sell_usd = fc.get_current_data(coin_to_sell)
+            coin_price_dict = {coin_to_buy:coin_to_buy_usd, coin_to_sell:coin_to_sell_usd}
+            self.arbitrage_table = fc.get_arbitrage_from_2_currencies(coin_to_buy, coin_to_sell, self.active_trades, self.filled_trades,
+            coin_price_dict, self.defining_attributes, self.days, market_percentage=daily_market_percentage)
+            return self.arbitrage_table
+        except AttributeError:
+            print('Please get both the active trades and the filled trades dataframes before attempting to get the arbitrage table.\n')
+    def execute_arbitrage(self, percentage_above = 20, price_reduction = 0.005, number_of_cards=0, cards_each_time=10):
+        try:
+            fc.execute_trades(self.arbitrage_table, self.coin_to_buy, self.coin_to_sell, 
+        number_of_total_cards=number_of_cards, cards_each_time=cards_each_time, percentage_above=percentage_above,
+        price_reduction=price_reduction)
+        except AttributeError:
+            print('Please get the arbitrage table first by executing the function "determine_arbitrage".')
+
 
     
 
@@ -94,11 +107,6 @@ class game:
 
 
 
-#print(gogh.get_metadata_schema())
-
-    
-
-    #def sold_items_last_days(self, days):
         
     
             
