@@ -53,6 +53,13 @@ class game:
 
         self.metadata = df
         return df
+
+    def get_value_counts(self):
+        try: 
+            print(f'In the last {self.days}, the coins used were:')
+            print(self.filled_trades.coin.value_counts())
+        except AttributeError:
+            print('Please load/download the filled trades.')
     def download_filled_trades(self, number_of_days:int):
         self.days = number_of_days
         self.filled_trades = fc.get_filled_trades_from_start_day(self.days,self.defining_attributes, self.address, )
