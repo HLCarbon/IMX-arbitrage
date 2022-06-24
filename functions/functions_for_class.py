@@ -343,6 +343,9 @@ cards_each_time:int = 10, percentage_above:int = 20, price_reduction = 0.005) ->
     df = df[df['percentage']>percentage_above]
     if number_of_total_cards >0:
         df = df.iloc[:number_of_total_cards]
+    if df.empty:
+        print('The exporting table is empty. Check the coins used, the market_percentage and/or the percentage parameters.')
+        sys.exit()
     #Sells the cards 10 at a time because the marketplace API only allows me to make 10 trades per second.
     lst = []
     for i in range(int(len(df)/cards_each_time)+1):

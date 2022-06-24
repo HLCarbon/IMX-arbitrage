@@ -1,4 +1,7 @@
-﻿order_id;token_id;image_url;type2;amount_sold;updated_timestamp
+﻿order_id;token_id;image_url;coin;amount_sold;updated_timestamp
+210750771;47531;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Varik/Thumbnail_Hero_Varik_Base.png;GODS;18.083;2022-06-24T15:22:02.997339Z
+210748443;99917;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rei/Thumbnail_Hero_Rei_Base.png;GODS;21.4;2022-06-24T15:07:20.476382Z
+210748407;104813;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rowan/Thumbnail_Hero_Rowan_Base.png;GODS;21.4;2022-06-24T15:07:05.63136Z
 210729906;81059;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Ulmak/Thumbnail_Hero_Ulmak_Base.png;IMX;18.37725;2022-06-24T12:54:49.986393Z
 210729846;127568;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Torim/Thumbnail_Hero_Torim_Base.png;IMX;24.448858;2022-06-24T12:54:16.563319Z
 210729747;153232;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Strider/Thumbnail_Hero_Strider_Base.png;IMX;18.62228;2022-06-24T12:53:40.976078Z
@@ -6,7 +9,6 @@
 210713611;133798;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Tieroc/Thumbnail_Hero_Tieroc_Base.png;ETH;0.171842;2022-06-24T11:02:46.287965Z
 210713545;24585;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Takati/Thumbnail_Hero_Takati_Base.png;ETH;0.035417;2022-06-24T11:02:26.254363Z
 210705068;141946;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Akhun/Thumbnail_Hero_Akhun_Base.png;ETH;0.005671;2022-06-24T10:06:51.126642Z
-210704930;153042;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Arkus/Thumbnail_Hero_Arkus_Base.png;ETH;0.005457;2022-06-24T10:06:00.302544Z
 210699460;176800;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Miera/Thumbnail_Hero_Miera_Base.png;ETH;0.022898;2022-06-24T09:26:42.997851Z
 210699432;33651;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Miera/Thumbnail_Hero_Miera_Base.png;ETH;0.022898;2022-06-24T09:26:31.181368Z
 210699404;120442;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Miera/Thumbnail_Hero_Miera_Base.png;ETH;0.022898;2022-06-24T09:26:20.141695Z
@@ -22,13 +24,10 @@
 210650629;57037;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Prielle/Thumbnail_Hero_Prielle_Base.png;ETH;0.028462;2022-06-24T03:30:05.970605Z
 210650595;68434;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Morax/Thumbnail_Hero_Morax_Base.png;ETH;0.025252;2022-06-24T03:29:52.869173Z
 210617353;121434;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Felicia/Thumbnail_Hero_Felicia_Warrior.png;ETH;0.013589;2022-06-23T23:31:59.564266Z
-210617227;121461;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Strider/Thumbnail_Hero_Strider_Base.png;ETH;0.005778;2022-06-23T23:31:12.042977Z
 210617156;82236;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Tikor/Thumbnail_Hero_Tikor_Warrior.png;ETH;0.009737;2022-06-23T23:30:46.032511Z
-210617042;82270;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Tikor/Thumbnail_Hero_Tikor_Base.png;ETH;0.004708;2022-06-23T23:29:52.697133Z
 210575086;28375;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Prielle/Thumbnail_Hero_Prielle_Elite.png;ETH;0.434527;2022-06-23T18:39:30.673987Z
 210563236;2200;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Freia/Thumbnail_Hero_Freia_Base.png;ETH;0.1177;2022-06-23T17:20:46.012666Z
 210557699;62084;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Arkus/Thumbnail_Hero_Arkus_Mythic.png;ETH;5.43988;2022-06-23T16:44:21.020647Z
-210554183;47531;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Varik/Thumbnail_Hero_Varik_Base.png;GODS;17.9225;2022-06-23T16:18:15.832828Z
 210538615;24014;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Morax/Thumbnail_Hero_Morax_Elite.png;ETH;0.2033;2022-06-23T14:41:54.334046Z
 210538526;6456;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Helia/Thumbnail_Hero_Helia_Elite.png;ETH;1.926;2022-06-23T14:41:29.424736Z
 210538379;9978;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Cyrus/Thumbnail_Hero_Cyrus_Elite.png;ETH;1.712;2022-06-23T14:40:34.364656Z
@@ -49,7 +48,6 @@
 210453260;4600;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Tieroc/Thumbnail_Hero_Tieroc_Base.png;ETH;0.17441;2022-06-23T05:35:12.343943Z
 210439928;134520;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Germain/Thumbnail_Hero_Germain_Base.png;ETH;0.004708;2022-06-23T04:05:10.049473Z
 210439619;70847;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Torim/Thumbnail_Hero_Torim_Base.png;ETH;0.004815;2022-06-23T04:03:12.177719Z
-210435966;47492;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Tomoe/Thumbnail_Hero_Tomoe_Base.png;ETH;0.005671;2022-06-23T03:39:24.350676Z
 210434480;137730;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Kanreh/Thumbnail_Hero_Kanreh_Base.png;ETH;0.025038;2022-06-23T03:29:35.586449Z
 210434447;33295;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Ewindel/Thumbnail_Hero_Ewindel_Base.png;ETH;0.024182;2022-06-23T03:29:25.653567Z
 210434408;25232;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Elohatt/Thumbnail_Hero_Elohatt_Base.png;ETH;0.027392;2022-06-23T03:29:10.497613Z
@@ -67,11 +65,8 @@
 210388458;6911;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Helia/Thumbnail_Hero_Helia_Base.png;ETH;0.1177;2022-06-22T22:07:02.367304Z
 210374823;59637;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rowan/Thumbnail_Hero_Rowan_Base.png;GODS;26.75;2022-06-22T20:40:34.727021Z
 210374604;32815;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Ewindel/Thumbnail_Hero_Ewindel_Base.png;GODS;99.082;2022-06-22T20:38:46.678071Z
-210346948;147327;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Daskah/Thumbnail_Hero_Daskah_Base.png;ETH;0.004708;2022-06-22T18:01:16.471863Z
-210345044;147297;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rei/Thumbnail_Hero_Rei_Base.png;ETH;0.00535;2022-06-22T17:51:43.332971Z
 210344657;125864;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Arkus/Thumbnail_Hero_Arkus_Base.png;ETH;0.005564;2022-06-22T17:49:57.232976Z
 210344279;125837;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Strider/Thumbnail_Hero_Strider_Base.png;ETH;0.005885;2022-06-22T17:48:14.896615Z
-210344067;124979;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Tomoe/Thumbnail_Hero_Tomoe_Base.png;ETH;0.005778;2022-06-22T17:47:20.281412Z
 210343608;70985;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Aria/Thumbnail_Hero_Aria_Base.png;ETH;0.006099;2022-06-22T17:45:27.746853Z
 210343396;82070;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Akhun/Thumbnail_Hero_Akhun_Base.png;ETH;0.005778;2022-06-22T17:44:29.564381Z
 210342731;147325;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Felicia/Thumbnail_Hero_Felicia_Base.png;ETH;0.00642;2022-06-22T17:41:34.987438Z
@@ -89,11 +84,8 @@
 210098143;7257;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Helia/Thumbnail_Hero_Helia_Mythic.png;ETH;48.15;2022-06-21T20:31:26.719015Z
 210044239;116859;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Germain/Thumbnail_Hero_Germain_Base.png;ETH;0.214;2022-06-21T17:33:00.384068Z
 209978393;191801;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/NRG_Reborne/Thumbnail_Hero_NRG_Reborne_Base.png;ETH;0.4922;2022-06-21T11:45:09.986737Z
-209952448;134088;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rowan/Thumbnail_Hero_Rowan_Base.png;ETH;0.005457;2022-06-21T09:20:01.479013Z
-209904197;138481;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Daskah/Thumbnail_Hero_Daskah_Base.png;ETH;0.004708;2022-06-21T03:47:49.020593Z
 209904050;146472;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Torim/Thumbnail_Hero_Torim_Base.png;ETH;0.004815;2022-06-21T03:47:02.10039Z
 209904006;143796;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Torim/Thumbnail_Hero_Torim_Base.png;ETH;0.004815;2022-06-21T03:46:48.524846Z
-209903914;153583;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Torim/Thumbnail_Hero_Torim_Base.png;ETH;0.004815;2022-06-21T03:46:17.20839Z
 209902457;146714;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Arkus/Thumbnail_Hero_Arkus_Base.png;ETH;0.005671;2022-06-21T03:37:46.934104Z
 209902412;183464;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Arkus/Thumbnail_Hero_Arkus_Base.png;ETH;0.005671;2022-06-21T03:37:31.879746Z
 209902370;138135;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Arkus/Thumbnail_Hero_Arkus_Base.png;ETH;0.005671;2022-06-21T03:37:18.686232Z
@@ -102,7 +94,6 @@
 209902151;107209;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Akhun/Thumbnail_Hero_Akhun_Base.png;ETH;0.005885;2022-06-21T03:36:15.496619Z
 209902071;131470;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Tomoe/Thumbnail_Hero_Tomoe_Base.png;ETH;0.005885;2022-06-21T03:35:51.655584Z
 209901967;95970;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Tomoe/Thumbnail_Hero_Tomoe_Base.png;ETH;0.005885;2022-06-21T03:35:26.458611Z
-209901911;134425;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Tomoe/Thumbnail_Hero_Tomoe_Base.png;ETH;0.005885;2022-06-21T03:35:11.131499Z
 209901838;162937;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Aria/Thumbnail_Hero_Aria_Base.png;ETH;0.006206;2022-06-21T03:34:52.574294Z
 209901802;19093;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rufus/Thumbnail_Hero_Rufus_Warrior.png;ETH;0.24182;2022-06-21T03:34:44.63341Z
 209901784;134475;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Aria/Thumbnail_Hero_Aria_Base.png;ETH;0.006206;2022-06-21T03:34:39.180587Z
@@ -152,10 +143,8 @@
 209547940;62088;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Germain/Thumbnail_Hero_Germain_Base.png;IMX;19.952504;2022-06-19T15:39:04.850541Z
 209547744;102392;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Tomoe/Thumbnail_Hero_Tomoe_Base.png;IMX;19.427455;2022-06-19T15:38:08.263156Z
 209547665;53468;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Strider/Thumbnail_Hero_Strider_Base.png;IMX;18.797332;2022-06-19T15:37:43.198043Z
-209509925;52155;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Varik/Thumbnail_Hero_Varik_Base.png;ETH;0.004708;2022-06-19T11:57:47.646935Z
 209507253;164006;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rei/Thumbnail_Hero_Rei_Base.png;ETH;0.005457;2022-06-19T11:39:37.790136Z
 209507206;98949;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rei/Thumbnail_Hero_Rei_Base.png;ETH;0.005457;2022-06-19T11:39:23.714899Z
-209507163;99917;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rei/Thumbnail_Hero_Rei_Base.png;ETH;0.005457;2022-06-19T11:39:09.569881Z
 209496678;59622;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Aria/Thumbnail_Hero_Aria_Warrior.png;ETH;0.014552;2022-06-19T10:35:20.644972Z
 209496175;61379;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rei/Thumbnail_Hero_Rei_Base.png;ETH;0.005564;2022-06-19T10:32:38.708198Z
 209481833;24376;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Miera/Thumbnail_Hero_Miera_Elite.png;ETH;0.211004;2022-06-19T09:09:56.654217Z
@@ -214,7 +203,6 @@
 208995576;153732;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Morax/Thumbnail_Hero_Morax_Elite.png;ETH;0.2247;2022-06-17T08:25:14.869472Z
 208994874;175811;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Felicia/Thumbnail_Hero_Felicia_Base.png;ETH;0.006634;2022-06-17T08:20:00.03113Z
 208994841;190598;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Felicia/Thumbnail_Hero_Felicia_Base.png;ETH;0.006634;2022-06-17T08:19:45.33166Z
-208994712;104813;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rowan/Thumbnail_Hero_Rowan_Base.png;ETH;0.005564;2022-06-17T08:18:52.976808Z
 208990531;142072;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Umbar/Thumbnail_Hero_Umbar_Base.png;ETH;0.004815;2022-06-17T07:54:35.199508Z
 208990122;143049;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Umbar/Thumbnail_Hero_Umbar_Base.png;ETH;0.004815;2022-06-17T07:51:47.291549Z
 208989870;116319;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Umbar/Thumbnail_Hero_Umbar_Base.png;ETH;0.004815;2022-06-17T07:50:11.39428Z
@@ -228,7 +216,6 @@
 208745568;63919;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Umbar/Thumbnail_Hero_Umbar_Base.png;ETH;0.025145;2022-06-16T10:06:35.991499Z
 208745301;145204;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Ulmak/Thumbnail_Hero_Ulmak_Base.png;ETH;0.01819;2022-06-16T10:04:50.061094Z
 208745108;104838;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Strider/Thumbnail_Hero_Strider_Base.png;ETH;0.006099;2022-06-16T10:03:43.844508Z
-208744793;132902;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Ulmak/Thumbnail_Hero_Ulmak_Base.png;ETH;0.005029;2022-06-16T10:01:45.156293Z
 208739478;14;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rufus/Thumbnail_Hero_Rufus_Warrior.png;ETH;0.242783;2022-06-16T09:23:56.609552Z
 208739282;28261;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Tieroc/Thumbnail_Hero_Tieroc_Warrior.png;ETH;0.264076;2022-06-16T09:22:28.611952Z
 208739267;130564;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Tieroc/Thumbnail_Hero_Tieroc_Warrior.png;ETH;0.264076;2022-06-16T09:22:14.676115Z
@@ -1716,8 +1703,8 @@
 126182201;161030;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Kalix/Thumbnail_Hero_Kalix_Base.png;ETH;0.009523;2022-04-01T06:19:55.307033Z
 126182089;104819;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Kalix/Thumbnail_Hero_Kalix_Base.png;ETH;0.009523;2022-04-01T06:19:52.265452Z
 126182066;143287;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Kalix/Thumbnail_Hero_Kalix_Base.png;ETH;0.009523;2022-04-01T06:19:50.319152Z
-126182006;194158;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/NRG_Reborne/Thumbnail_Hero_NRG_Reborne_Elite.png;ETH;0.856;2022-04-01T06:19:47.526663Z
 126182010;144141;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Kalix/Thumbnail_Hero_Kalix_Base.png;ETH;0.009523;2022-04-01T06:19:47.526663Z
+126182006;194158;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/NRG_Reborne/Thumbnail_Hero_NRG_Reborne_Elite.png;ETH;0.856;2022-04-01T06:19:47.526663Z
 126181909;116401;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Kalix/Thumbnail_Hero_Kalix_Base.png;ETH;0.009523;2022-04-01T06:19:44.55078Z
 126181796;179505;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Kalix/Thumbnail_Hero_Kalix_Base.png;ETH;0.009523;2022-04-01T06:19:42.562532Z
 126181728;108455;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Kalix/Thumbnail_Hero_Kalix_Base.png;ETH;0.009523;2022-04-01T06:19:40.444395Z
@@ -5410,8 +5397,8 @@
 8024070;126571;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Arkus/Thumbnail_Hero_Arkus_Base.png;ETH;0.0212;2022-01-05T12:39:07.091995Z
 8024038;73955;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Arkus/Thumbnail_Hero_Arkus_Base.png;ETH;0.0212;2022-01-05T12:38:54.169874Z
 8024003;120987;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Arkus/Thumbnail_Hero_Arkus_Base.png;ETH;0.0212;2022-01-05T12:38:39.752327Z
-8023944;150780;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Arkus/Thumbnail_Hero_Arkus_Base.png;ETH;0.0212;2022-01-05T12:38:35.298448Z
 8023976;53694;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Arkus/Thumbnail_Hero_Arkus_Base.png;ETH;0.0212;2022-01-05T12:38:35.298448Z
+8023944;150780;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Arkus/Thumbnail_Hero_Arkus_Base.png;ETH;0.0212;2022-01-05T12:38:35.298448Z
 8023859;124076;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Arkus/Thumbnail_Hero_Arkus_Base.png;ETH;0.0212;2022-01-05T12:37:18.011311Z
 8023823;173514;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Tomoe/Thumbnail_Hero_Tomoe_Base.png;ETH;0.0212;2022-01-05T12:36:59.383657Z
 8023788;156472;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Tomoe/Thumbnail_Hero_Tomoe_Base.png;ETH;0.0212;2022-01-05T12:36:43.67388Z
@@ -5468,8 +5455,8 @@
 7962482;21177;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Tavros/Thumbnail_Hero_Tavros_Base.png;ETH;0.5194;2022-01-05T02:53:29.238495Z
 7962453;2720;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Kharkuk/Thumbnail_Hero_Kharkuk_Base.png;ETH;0.5194;2022-01-05T02:53:13.024811Z
 7962420;2090;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Tieroc/Thumbnail_Hero_Tieroc_Base.png;ETH;0.5194;2022-01-05T02:52:55.294405Z
-7962028;11352;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Freia/Thumbnail_Hero_Freia_Base.png;ETH;0.5194;2022-01-05T02:49:29.972746Z
 7962054;14336;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Cyrus/Thumbnail_Hero_Cyrus_Base.png;ETH;0.5194;2022-01-05T02:49:29.972746Z
+7962028;11352;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Freia/Thumbnail_Hero_Freia_Base.png;ETH;0.5194;2022-01-05T02:49:29.972746Z
 7915472;27407;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Lia/Thumbnail_Hero_Lia_Base.png;ETH;10.7166;2022-01-04T21:03:15.822619Z
 7913004;43857;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Torim/Thumbnail_Hero_Torim_Base.png;ETH;0.02544;2022-01-04T20:40:22.497957Z
 7912969;54540;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Aria/Thumbnail_Hero_Aria_Base.png;ETH;0.02544;2022-01-04T20:40:01.890149Z
@@ -5879,8 +5866,8 @@
 6142098;103999;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rei/Thumbnail_Hero_Rei_Base.png;ETH;0.04028;2021-12-23T17:09:47.710454Z
 6142077;126765;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rei/Thumbnail_Hero_Rei_Base.png;ETH;0.03922;2021-12-23T17:09:30.484183Z
 6142059;110514;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rei/Thumbnail_Hero_Rei_Base.png;ETH;0.03816;2021-12-23T17:09:14.272554Z
-6142036;165715;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rei/Thumbnail_Hero_Rei_Base.png;ETH;0.03816;2021-12-23T17:09:05.190825Z
 6142015;117016;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rei/Thumbnail_Hero_Rei_Base.png;ETH;0.0371;2021-12-23T17:09:05.190825Z
+6142036;165715;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rei/Thumbnail_Hero_Rei_Base.png;ETH;0.03816;2021-12-23T17:09:05.190825Z
 6141998;181914;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rei/Thumbnail_Hero_Rei_Base.png;ETH;0.03498;2021-12-23T17:08:52.753126Z
 6141967;98861;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rei/Thumbnail_Hero_Rei_Base.png;ETH;0.03392;2021-12-23T17:08:46.980666Z
 6141935;184373;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Rei/Thumbnail_Hero_Rei_Base.png;ETH;0.03286;2021-12-23T17:07:49.941184Z
@@ -6677,8 +6664,8 @@
 2842446;29810;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Ewindel/Thumbnail_Hero_Ewindel_Base.png;ETH;0.265;2021-10-29T06:59:51.221782Z
 2838104;18023;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Morax/Thumbnail_Hero_Morax_Base.png;ETH;1.06;2021-10-29T02:53:11.199758Z
 2818258;5005;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Freia/Thumbnail_Hero_Freia_Base.png;ETH;139.92;2021-10-28T10:00:10.909028Z
-2817929;35388;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Kanreh/Thumbnail_Hero_Kanreh_Base.png;ETH;0.861038;2021-10-28T09:44:34.526897Z
 2817933;12419;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Duren/Thumbnail_Hero_Duren_Base.png;ETH;1.17766;2021-10-28T09:44:34.526897Z
+2817929;35388;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Kanreh/Thumbnail_Hero_Kanreh_Base.png;ETH;0.861038;2021-10-28T09:44:34.526897Z
 2815764;34975;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Morax/Thumbnail_Hero_Morax_Warrior.png;ETH;0.2491;2021-10-28T07:36:15.902733Z
 2809915;6699;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Tavros/Thumbnail_Hero_Tavros_Elite.png;ETH;12.72;2021-10-27T23:32:43.603152Z
 2786347;40259;https://gog-art-assets.s3-ap-southeast-2.amazonaws.com/Content/Thumbnails/Heroes/Kanreh/Thumbnail_Hero_Kanreh_Base.png;ETH;1.06;2021-10-27T02:16:40.999768Z

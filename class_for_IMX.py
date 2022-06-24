@@ -90,6 +90,9 @@ class game:
             coin_price_dict = {coin_to_buy:coin_to_buy_usd, coin_to_sell:coin_to_sell_usd}
             self.arbitrage_table = fc.get_arbitrage_from_2_currencies(coin_to_buy, coin_to_sell, self.active_trades, self.filled_trades,
             coin_price_dict, self.defining_attributes, self.days, market_percentage=daily_market_percentage)
+            if self.arbitrage_table.empty:
+                print('The final table is empty. Check the coins used or the market_percentage')
+                sys.exit()
             return self.arbitrage_table
         except AttributeError:
             print('Please get both the active trades and the filled trades dataframes before attempting to get the arbitrage table.\n')
