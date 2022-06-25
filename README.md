@@ -58,7 +58,7 @@ How this is organized:
    
 The file names are then suffixed with the address of the game that you want to analyze.
 
-###Other functions
+### Other functions
 game.get_nft_properties
 >Gives you the attributes that you can use to group the NFT's. At the time of writing, the only ones available are name and image.
 
