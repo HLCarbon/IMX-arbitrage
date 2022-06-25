@@ -1,5 +1,5 @@
 # IMX-arbitrage
-### Using Python to buy and sell cards to earn a profit ###
+### Using Python to buy and sell cards to earn a profit
 
 Welcome to my arbitrage program!
 [IMX](https://market.immutable.com/) is an L2 NTF market that hosts plenty of games. Some of these games have NTF's that are exactly the same apart of their ID:
